@@ -1,6 +1,6 @@
 * {
     box-sizing: border-box;
-    border: 1px red;
+    border: solid 1px red;
     margin: 1em;
 }
 
@@ -22,4 +22,8 @@ html, body {
 .container {
     height: 600px;
     width: 600px;
+}
+
+.form {
+    background-color: lightgray;
 }

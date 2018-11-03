@@ -1,5 +1,6 @@
 var map;
 var markers = [];
+var getElem = document.getElementById;
 
 // Create dummy data to test marking on the map: in real app, read data from backend here
 const place1 = {
@@ -19,9 +20,9 @@ const place2 = {
 }
 
 let places = [place1, place2];
-
 // Initialize the map:
 
+//Check if the map initialization can be done according to the markers:
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 60.147497, lng: 24.988798},
@@ -36,4 +37,9 @@ function initMap() {
     });
     markers.push(marker);
   });
+}
+
+function addPlace() {
+  event.preventDefault();
+  console.log('add place')
 }
