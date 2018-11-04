@@ -20,14 +20,14 @@ class PlaceController extends Controller
 
     public function create(Request $request)
     {
-        // Validate all fields
+        // TODO: Add sensible validation to all fields
         $this->validate($request,[
-            'title' => 'required',
-            'description' => 'required',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-            'opens_at' => 'required|numeric',
-            'closes_at' => 'required|numeric'
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'latitude' => 'required|string',
+            'longitude' => 'required|string',
+            'opens_at' => 'required|string',
+            'closes_at' => 'required|string'
         ]);
 
         $place = Place::create($request->all());
