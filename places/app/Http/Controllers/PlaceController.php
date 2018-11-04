@@ -20,17 +20,27 @@ class PlaceController extends Controller
 
     public function create(Request $request)
     {
-        $Place = Place::create($request->all());
+        // Validate all fields
+        $this->validate($request,[
+            'title' => 'required',
+            'description' => 'required',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'opens_at' => 'required|numeric',
+            'closes_at' => 'required|numeric'
+        ]);
 
-        return response()->json($Place, 201);
+        $place = Place::create($request->all());
+
+        return response()->json($place, 201);
     }
 
     public function update($id, Request $request)
     {
-        $Place = Place::findOrFail($id);
-        $Place->update($request->all());
+        $place = Place::findOrFail($id);
+        $place->update($request->all());
 
-        return response()->json($Place, 200);
+        return response()->json($place, 200);
     }
 
     public function delete($id)
