@@ -11,12 +11,13 @@ function placeData(place) {
             <p>${place.latitude}, ${place.longitude}</p>
             <button type="button" value=${place.id} onclick="editPlace();">Edit</button>
             <button type="button" value=${place.id} onclick="removePlace();">Remove</button>
-          </div>`;
+          </div>`
 }
 
+ // <form action="http://localhost:8000/api/places/" method="POST">
 function createForm() {
-  return `<div class="form">
-            <form>
+  return `<div>
+            <form action="http://localhost:8000/api/places/" method="POST">
               <div>
                 <label htmlFor="title">
                   Title
@@ -39,12 +40,13 @@ function createForm() {
               </div>
               <div>
                 <label htmlFor="hours">
-                  Opening hours (add input as numbers, for example, opens at 13:30 is 1330)
+                  Opening hours
                 </label>
-                <input id="opens_at" type="text" name="opens_at" placeholder="Opening time" maxlength="4" minlength="4" required value="1300" />
-                <input id="closes_at" type="text" name="closes_at" placeholder="Closing time" maxlength="4" minlength="4" required value="1400"/>
+                <br />
+                <input id="opens_at" type="time" name="opens_at" placeholder="Opening time" required />-
+                <input id="closes_at" type="time" name="closes_at" placeholder="Closing time" required />
               </div>
-              <input type="submit" value="Add Place" />
+              <input type="submit" value="Add Place"/>
             </form>
           </div>`
 }
@@ -85,12 +87,12 @@ function editForm(place) {
           </div>`
 }
 
-function addPlace() {
-  event.preventDefault();
-  console.log("addPlace");
-  //nollaa formi
-  document.querySelector('.form').innerHTML = createForm();
-}
+// function addPlace() {
+//   event.preventDefault();
+//   console.log("addPlace");
+//   //nollaa formi
+//   document.querySelector('.form').innerHTML = createForm();
+// }
 
 function editPlace() {
   event.preventDefault();
@@ -179,10 +181,16 @@ function initMap() {
 
     markers.push(marker);
   })});
-
+  
   map.addListener('click', function(e) {
     placeMarkerAndPanTo(e.latLng, map);
   });
+
+  // var form = document.getElementById(".form"); 
+  // console.log(form)
+  // function handleForm(event) { event.preventDefault();
+  // console.log("handleform") } 
+  // form.addEventListener('submit', handleForm);
 
 // TODO: List behavior doesn't work properly with the remove due to indexing or something bug
 // First item on the list cannot be removed?

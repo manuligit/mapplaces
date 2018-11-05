@@ -1,28 +1,43 @@
 * {
     box-sizing: border-box;
-    margin: 1em;
 }
 
 /* Always set the map height explicitly to define the size of the div
 * element that contains the map. */
 #map {
     height: 100%;
+    width: 100%;
+    position: absolute;
     background-color: pink;
-    overflow: visible;
+    top: 0;
+    left: 0;
+    z-index: 0;
 }
 
-/* Optional: Makes the sample page fill the window. */
+.main {
+    z-index: 1;
+    position: relative;
+    background-color: white;
+    width: 30%;
+    float: right;
+    margin: 20px;
+    padding: 20px;
+}
+/* 
+Optional: Makes the sample page fill the window.  */
 html, body {
     height: 100%;
+    width: 100%;
     margin: 0;
-    padding: 0;
-}
-
-.container {
-    height: 600px;
-    width: 600px;
+    padding: 0; 
 }
 
 .form {
+    padding: 1.5em;
     background-color: lightgray;
+}
+
+textarea {
+    width: 90%;
+    resize: none;
 }
