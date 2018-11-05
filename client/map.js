@@ -1,15 +1,36 @@
 var map;
 var markers = [];
-var getElem = document.getElementById;
-let places;
+var places;
+var fetchDefaults = {
+  mode: 'cors'
+};
+let base_url = "http://localhost:8000/api/places/";
+let filter = "";
+let current_places;
+
+//remove dis <<
+let init = false;
+
+window.doFetch = (url, options) => fetch(url, Object.assign({}, fetchDefaults, options));
+window.getJson = (url, options) => doFetch(url, options).then(res => res.json());
+
 
 function placeData(place) {
   return `<div id="content">
             <h1>${place.title}</h1>
             <p>${place.description}</p>
-            <p>Opening hours: ${place.opens_at}-${place.closes_at} </p>
+            <p>Opening hours: 
+            <time>${place.opens_at}</time>-<time>${place.closes_at}</time> </p>
             <p>${place.latitude}, ${place.longitude}</p>
-            <button type="button" value=${place.id} onclick="editPlace();">Edit</button>
+            <button type="button" value=${place.id} onclick="addEditPlaceForm();">Edit</button>
+            <button type="button" value=${place.id} onclick="removePlace();">Remove</button>
+          </div>`
+}
+
+function placeDataShort(place) {
+  return `<div id="content">
+            <p>${place.title}</p>
+            <button type="button" value=${place.id} onclick="addEditPlaceForm();">Edit</button>
             <button type="button" value=${place.id} onclick="removePlace();">Remove</button>
           </div>`
 }
@@ -17,7 +38,7 @@ function placeData(place) {
  // <form action="http://localhost:8000/api/places/" method="POST">
 function createForm() {
   return `<div>
-            <form action="http://localhost:8000/api/places/" method="POST">
+            <form onsubmit="addPlace();">
               <div>
                 <label htmlFor="title">
                   Title
@@ -43,8 +64,8 @@ function createForm() {
                   Opening hours
                 </label>
                 <br />
-                <input id="opens_at" type="time" name="opens_at" placeholder="Opening time" required />-
-                <input id="closes_at" type="time" name="closes_at" placeholder="Closing time" required />
+                <input id="opens_at" type="time" name="opens_at" placeholder="Opening time" value="13:30" required />-
+                <input id="closes_at" type="time" name="closes_at" placeholder="Closing time"  value="14:30" required />
               </div>
               <input type="submit" value="Add Place"/>
             </form>
@@ -52,9 +73,8 @@ function createForm() {
 }
 
 function editForm(place) {
-  console.log(place.description)
-  return `<div class="form">
-            <form action="http://localhost:8000/api/places/${place.id}" method="PUT">
+  return `<div>
+            <form onsubmit="editPlace(${place.id});">
               <div>
                 <label htmlFor="title">
                   Title
@@ -77,29 +97,72 @@ function editForm(place) {
               </div>
               <div>
                 <label htmlFor="hours">
-                  Opening hours (add input as numbers, for example, opens at 13:30 is 1330)
+                  Opening hours
                 </label>
-                <input id="opens_at" type="text" name="opens_at" placeholder="Opening time" maxlength="4" minlength="4" value=${place.opens_at} required />
-                <input id="closes_at" type="text" name="closes_at" placeholder="Closing time" maxlength="4" minlength="4" value=${place.closes_at} required />
+                <br />
+                <input id="opens_at" type="time" name="opens_at" placeholder="Opening time" value=${place.opens_at} required />-
+                <input id="closes_at" type="time" name="closes_at" placeholder="Closing time" value=${place.closes_at}} required />
               </div>
               <input type="submit" value="Edit Place"/>
             </form>
           </div>`
 }
 
-// function addPlace() {
-//   event.preventDefault();
-//   console.log("addPlace");
-//   //nollaa formi
-//   document.querySelector('.form').innerHTML = createForm();
-// }
+// Get form data as URLSearchParams to send with fetch request by searching an element from the DOM
+function getFormData(tag) {
+  var formElement = document.querySelector(tag);
+  const data = new URLSearchParams();
+  for (const pair of new FormData(formElement)) {
+    data.append(pair[0], pair[1]);
+  }
+  return data;
+}
 
-function editPlace() {
+function addPlace() {
   event.preventDefault();
-  console.log(places)
+  // console.log("addPlace");
+  // console.log(event)
+  // console.log("woong")
+  //Send a fetch request with the parameters from the form
+  const data = getFormData("form");
+
+  fetch(base_url,
+    {
+        body: data,
+        method: "post"
+    }).then(
+      console.log("request sent")
+    );
+    // then: run update on the markers/places list
+    // if fails, add debugger
+
+  //console.log(data)
+  //nollaa formi
+  document.querySelector('.form').innerHTML = createForm();
+}
+
+function addEditPlaceForm() {
+  event.preventDefault();
+  //console.log(places)
   let place = places.find(e => e.id === parseInt(event.target.value, 10)); 
-  console.log(place)
+  //console.log(place)
   document.querySelector('.form').innerHTML = editForm(place);
+}
+
+function editPlace(id) {
+  event.preventDefault();
+  console.log(id)
+
+  const data = getFormData("form");
+  fetch(`${base_url}${id}`,
+    {
+        body: data,
+        method: "put",
+        mode: 'cors'
+    }).then(
+      console.log("request sent")
+    );
+
 }
 
 function update() {
@@ -113,7 +176,7 @@ function update() {
 
 // Create a place list from all the data
 function placeList() {
-  return places.map(p => placeData(p));
+  return "<div>" + places.map(p => placeDataShort(p)) + "</div>";
 }
 
 
@@ -180,17 +243,24 @@ function initMap() {
     })
 
     markers.push(marker);
-  })});
-  
+
+  })
+
+  document.querySelector('#menu').innerHTML = placeList();
+});
+
   map.addListener('click', function(e) {
     placeMarkerAndPanTo(e.latLng, map);
   });
 
+  init = true;
   // var form = document.getElementById(".form"); 
   // console.log(form)
   // function handleForm(event) { event.preventDefault();
   // console.log("handleform") } 
   // form.addEventListener('submit', handleForm);
+
+
 
 // TODO: List behavior doesn't work properly with the remove due to indexing or something bug
 // First item on the list cannot be removed?
@@ -251,7 +321,9 @@ function placeMarkerAndPanTo(latLng, map) {
   map.panTo(latLng);
 }
 
-function addPlace() {
-  event.preventDefault();
-  console.log('add place');
+if (!init) {
+  getData().then(
+    console.log(places)
+    //document.querySelector('#menu').innerHTML = placeList()
+  );
 }

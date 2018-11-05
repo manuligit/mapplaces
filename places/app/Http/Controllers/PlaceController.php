@@ -39,7 +39,7 @@ class PlaceController extends Controller
     {
         $place = Place::findOrFail($id);
         $place->update($request->all());
-
+        
         return response()->json($place, 200);
     }
 
