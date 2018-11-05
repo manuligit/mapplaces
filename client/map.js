@@ -73,6 +73,7 @@ function createForm() {
 }
 
 function editForm(place) {
+  console.log(place)
   return `<div>
             <form onsubmit="editPlace(${place.id});">
               <div>
@@ -101,7 +102,7 @@ function editForm(place) {
                 </label>
                 <br />
                 <input id="opens_at" type="time" name="opens_at" placeholder="Opening time" value=${place.opens_at} required />-
-                <input id="closes_at" type="time" name="closes_at" placeholder="Closing time" value=${place.closes_at}} required />
+                <input id="closes_at" type="time" name="closes_at" placeholder="Closing time" value=${place.closes_at} required />
               </div>
               <input type="submit" value="Edit Place"/>
             </form>
@@ -310,7 +311,9 @@ removePlace = function () {
 
 function deleteFromServer(id) {
   return fetch(`http://localhost:8000/api/places/${id}`, { method: "DELETE", mode: "cors" })
-  .then(response => response.json()); // parses response to JSON
+  .then(
+    console.log("Place deleted")
+  );
 }
 
 function placeMarkerAndPanTo(latLng, map) {

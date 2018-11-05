@@ -22,6 +22,8 @@
     float: right;
     margin: 20px;
     padding: 20px;
+    height: 700px;
+    overflow: scroll;
 }
 /* 
 Optional: Makes the sample page fill the window.  */
