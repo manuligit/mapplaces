@@ -27,6 +27,11 @@ class KeywordController extends Controller
 
         $keyword = Keyword::create($request->all());
 
+        // find id from request params
+        //$place = Place.find([$request])
+        //$keyword->places()->attach($place);
+
+
         return response()->json($keyword, 201);
     }
 
@@ -34,6 +39,7 @@ class KeywordController extends Controller
     {
         $keyword = Keyword::findOrFail($id);
         $keyword->update($request->all());
+        // Update places
 
         return response()->json($keyword, 200);
     }

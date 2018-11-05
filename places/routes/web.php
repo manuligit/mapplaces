@@ -35,7 +35,4 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->delete('keywords/{id}', ['uses' => 'KeywordController@delete']);
   
     $router->put('keywords/{id}', ['uses' => 'KeywordController@update']);
-
-
-
 });

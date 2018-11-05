@@ -8,6 +8,7 @@ function placeData(place) {
             <h1>${place.title}</h1>
             <p>${place.description}</p>
             <p>Opening hours: ${place.opens_at}-${place.closes_at} </p>
+            <p>${place.latitude}, ${place.longitude}</p>
             <button type="button" value=${place.id} onclick="editPlace();">Edit</button>
             <button type="button" value=${place.id} onclick="removePlace();">Remove</button>
           </div>`;
@@ -15,40 +16,41 @@ function placeData(place) {
 
 function createForm() {
   return `<div class="form">
-            <form action="http://localhost:8000/api/places/" method="POST">
+            <form>
               <div>
                 <label htmlFor="title">
                   Title
                 </label>
-                <input id="title" type="text" name="title" required />
+                <input id="title" type="text" name="title" value="a" required />
               </div>
               <div>
                 <label htmlFor="description">
                   Description
                 </label>
                 <br />
-                <textarea id="description" name="description" rows="5" cols="40" required></textarea>
+                <textarea id="description" name="description" rows="5" cols="40" required>a</textarea>
               </div>
               <div>
                 <label htmlFor="coords">
                   Coordinates
                 </label>
-                <input id="latitude" type="text" name="latitude" placeholder="Latitude" required />
-                <input id="longitude" type="text" name="longitude" placeholder="Longitude" required />
+                <input id="latitude" type="text" name="latitude" placeholder="Latitude" required value="a" />
+                <input id="longitude" type="text" name="longitude" placeholder="Longitude" required value="a" />
               </div>
               <div>
                 <label htmlFor="hours">
                   Opening hours (add input as numbers, for example, opens at 13:30 is 1330)
                 </label>
-                <input id="opens_at" type="text" name="opens_at" placeholder="Opening time" maxlength="4" minlength="4" required />
-                <input id="closes_at" type="text" name="closes_at" placeholder="Closing time" maxlength="4" minlength="4" required />
+                <input id="opens_at" type="text" name="opens_at" placeholder="Opening time" maxlength="4" minlength="4" required value="1300" />
+                <input id="closes_at" type="text" name="closes_at" placeholder="Closing time" maxlength="4" minlength="4" required value="1400"/>
               </div>
-              <input type="submit" value="Add Place"/>
+              <input type="submit" value="Add Place" />
             </form>
           </div>`
 }
 
 function editForm(place) {
+  console.log(place.description)
   return `<div class="form">
             <form action="http://localhost:8000/api/places/${place.id}" method="PUT">
               <div>
@@ -62,7 +64,7 @@ function editForm(place) {
                   Description
                 </label>
                 <br />
-                <textarea id="description" name="description" rows="5" cols="40" value=${place.description} required></textarea>
+                <textarea id="description" name="description" rows="5" cols="40" required>${place.description}</textarea>
               </div>
               <div>
                 <label htmlFor="coords">
@@ -83,9 +85,35 @@ function editForm(place) {
           </div>`
 }
 
-function editPlace(place) {
+function addPlace() {
+  event.preventDefault();
+  console.log("addPlace");
+  //nollaa formi
+  document.querySelector('.form').innerHTML = createForm();
+}
+
+function editPlace() {
+  event.preventDefault();
+  console.log(places)
+  let place = places.find(e => e.id === parseInt(event.target.value, 10)); 
+  console.log(place)
   document.querySelector('.form').innerHTML = editForm(place);
 }
+
+function update() {
+  //Get data from backends
+  //Update the view data currently on display
+  getData();
+  // Redraw items? 
+  // Empty form:
+  document.querySelector('.form').innerHTML = createForm();
+}
+
+// Create a place list from all the data
+function placeList() {
+  return places.map(p => placeData(p));
+}
+
 
 // Former dummy data:
 // const place3 = {
@@ -111,7 +139,9 @@ function getData() {
   return fetch('http://localhost:8000/api/places/', { mode: "cors" })
     .then(function(response) {
       return response.json();
+      
     }).then((responseJson) => {
+      places = responseJson;
       return responseJson;
     });
 }
@@ -187,7 +217,22 @@ removePlace = function () {
     // Remove marker from markers: <<
     markers = markers.filter(e => e.place_id !== removeId);
     console.log(markers.length)
+
+    // Send DELETE request to the server:
+    deleteFromServer(removeId).then(
+      // Remove from places list << maybe redundant
+      places = places.filter(e => e.id !== removeId)
+      // Check that the value is deleted from keywords:
+  
+      //Call update
+
+    )
   }
+}
+
+function deleteFromServer(id) {
+  return fetch(`http://localhost:8000/api/places/${id}`, { method: "DELETE", mode: "cors" })
+  .then(response => response.json()); // parses response to JSON
 }
 
 function placeMarkerAndPanTo(latLng, map) {
