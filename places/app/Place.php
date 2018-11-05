@@ -22,4 +22,9 @@ class Place extends Model
      * @var array
      */
     protected $hidden = [];
+
+    public function keywords()
+    {
+        return $this->belongsToMany(Keyword::class);
+    }
 }

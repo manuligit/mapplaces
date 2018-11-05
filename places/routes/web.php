@@ -25,4 +25,17 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->delete('places/{id}', ['uses' => 'PlaceController@delete']);
   
     $router->put('places/{id}', ['uses' => 'PlaceController@update']);
-  });
+  
+    $router->get('keywords',  ['uses' => 'KeywordController@showAllKeywords']);
+  
+    $router->get('keywords/{id}', ['uses' => 'KeywordController@showOneKeyword']);
+  
+    $router->post('keywords', ['uses' => 'KeywordController@create']);
+  
+    $router->delete('keywords/{id}', ['uses' => 'KeywordController@delete']);
+  
+    $router->put('keywords/{id}', ['uses' => 'KeywordController@update']);
+
+
+
+});
