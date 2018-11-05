@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/styles.css">
+  </head>
+  <body>
+    <div class="container">
+      <div id="map"></div>
+      <div id="menu">hello</div>
+
+      <div class="form">
+        <form>
+          <div>
+            <label htmlFor="task">
+              Title
+            </label>
+            <input id="task" type="text" name="task" required />
+          </div>
+          <div>
+            <label htmlFor="desc">
+              Description
+            </label>
+            <br />
+            <textarea id="desc" name="desc" rows="5" cols="40" required></textarea>
+          </div>
+          <div>
+            <label htmlFor="coords">
+              Coordinates
+            </label>
+            <input id="lat" type="number" name="lat" placeholder="Latitude" required />
+            <input id="long" type="number" name="long" placeholder="Longitude" required />
+          </div>
+          <div>
+            <label htmlFor="hours">
+              Opening hours (add input as numbers, for example, opens at 13:30 is 1330)
+            </label>
+            <input id="openingtime" type="number" name="openingtime" placeholder="Opening time" maxlength="4" minlength="4" required />
+            <input id="closingtime" type="number" name="closingtime" placeholder="Closing time" maxlength="4" minlength="4" required />
+          </div>
+          <input type="submit" value="Add Place" onclick="addPlace();"/>
+        </form>
+      </div>
+    </div>
+
+    <script src="./map.js"></script>
+    <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB0T67t5UkvJ27eNMBvre_kESNYwzFZ8GI&callback=initMap"
+    async defer></script> -->
+    <script type="text/html" id="home">
+    </script>
+
+  </body>
+</html>
