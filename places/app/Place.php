@@ -25,6 +25,6 @@ class Place extends Model
 
     public function keywords()
     {
-        return $this->belongsToMany(Keyword::class);
+        return $this->belongsToMany('App\Keyword');
     }
 }

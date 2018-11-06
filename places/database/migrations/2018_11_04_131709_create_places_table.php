@@ -19,8 +19,8 @@ class CreatePlacesTable extends Migration
             $table->text('description');
             $table->double('latitude', 9, 7);
             $table->double('longitude', 9, 7);
-            $table->integer('opens_at');
-            $table->integer('closes_at');
+            $table->string('opens_at',6);
+            $table->string('closes_at',6);
             $table->timestamps();
         });
     }
