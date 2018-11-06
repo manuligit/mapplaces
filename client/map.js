@@ -8,16 +8,32 @@ let base_url = "http://localhost:8000/api/places/";
 let filter = "";
 let db_places;
 var infowindows = [];
+var search = "";
 
 window.doFetch = (url, options) => fetch(url, Object.assign({}, fetchDefaults, options));
 window.getJson = (url, options) => doFetch(url, options).then(res => res.json());
 
 function filterButton() {
+  let button;
   if (filter === "open") {
-    return `<button id="filter" value="" onclick="setFilter();"> Show all places</div>`
+    button = `<button id="filter" value="" onclick="setFilter();"> Show all places</div>`
   } else {
-    return `<button id="filter" value="open" onclick="setFilter();"> Show open places</div>`
+    button =`<button id="filter" value="open" onclick="setFilter();"> Show open places</div>`
   }
+  return button;
+}
+
+function searcbar() {
+  return `<input id="search" class="searchbar" oninput="searchPlaces();" value="${search}" placeholder="Search places"></input>`
+}
+
+function searchPlaces() {
+  event.preventDefault();
+
+  console.log(event.target.value)
+  filter = event.target.value;
+  search = event.target.value;
+  update();
 }
 
 function placeData(place) {
@@ -208,21 +224,44 @@ function filterOpen() {
 
   var open_places = [];
   db_places.forEach(e => {
-    // If the hours are not properly formatted, this not work <<
+    // If the hours are not properly formatted, this will not work <<
     opens.setHours(e.opens_at.slice(0,2));
     opens.setMinutes(e.opens_at.slice(3));
+
     closes.setHours(e.closes_at.slice(0,2));
     closes.setMinutes(e.closes_at.slice(3));
+    // console.log(closes.getHours(), closes.getMinutes())
+    // console.log(e.opens_at)
+
+
+    // console.log(opens.getTime())
+    // console.log(time.getTime())
+    // console.log(closes.getTime())
+    // console.log(opens.getTime() <= time.getTime())
 
     //console.log(isWithinRange(time, opens, closes))
 
     if (opens.getTime() <= time.getTime() && time.getTime() <= closes.getTime()) {
       open_places.push(e)
+    } else {
+      console.log('NOT OPEN:')
+      console.log(opens.getHours(), opens.getMinutes())
+      console.log(closes.getHours(), closes.getMinutes())
     }
 
   });
 
   return open_places;
+}
+
+function filterSearch() {
+  console.log("filterseatch")
+  var matches = [];
+
+  if (filter.length > 0) {
+    matches = db_places.filter(e => e.title.toLowerCase().includes(filter.toLowerCase()));
+  }
+  return matches; 
 }
 
 function update() {
@@ -239,6 +278,8 @@ function update() {
       if (filter === "open") {
         console.log("filter set");
         places = filterOpen();
+      } else {
+        places = filterSearch();
       }
       
       //places = places.filter()
@@ -271,6 +312,9 @@ function update() {
   document.querySelector('#filter').innerHTML= filterButton();
   // Empty form:
   document.querySelector('.form').innerHTML = createForm();
+  if (filter.length < 1) { 
+    document.querySelector('#searchbar').innerHTML = searcbar();
+  }
   })
 };
 
@@ -333,8 +377,20 @@ function initMap() {
 // });
 
   map.addListener('click', function(e) {
-    placeMarkerAndPanTo(e.latLng, map);
+    console.log(e.latLng.lat());
+    console.log(e.latLng.lng())
+
+    // var infowindow = new google.maps.InfoWindow({
+    //   content: `${e.latLng.lat()}, ${e.latLng.lat()}`
+    //  });
+
+
+
+    // placeMarkerAndPanTo(e.latLng, map);
     // Add markers to createForm
+
+
+
   });
 
   // var form = document.getElementById(".form"); 

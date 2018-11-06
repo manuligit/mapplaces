@@ -27,7 +27,11 @@ class KeywordController extends Controller
         // $keyword->attach($place);
         // $places = $keyword->load('places');
         //return $keyword->places();
-        return response()->json(Keyword::all()->load('places'));
+
+        $keyword = Keyword::find([2])->load('places');
+        return $keyword.places();
+        
+        //return response()->json(Keyword::all()->load('places'));
     }
 
     public function showOneKeyword($id)
@@ -44,25 +48,32 @@ class KeywordController extends Controller
         $keyword = new Keyword;
         $keyword->label = $request->label;
         
-        $place_id = $request->place_id;
-        if ($place_id) {
-            $place = Place::find([$place_id]);
-            $keyword->places()->attach($place);
+        $places = $request->places;
+        if ($places) {
+            
+            $place = Place::find($places['id']);
+            $keyword->places()->sync($place, false);
         }
         
         $keyword->save();
+
+        //$place = Place::create($request->all());
         return response()->json($keyword, 201);
     }
 
     public function update($id, Request $request)
     {
+        $this->validate($request,[
+            'label' => 'required|string'
+        ]);
+
         $keyword = Keyword::findOrFail($id);
-        //$keyword->update($request->());
-        // Sync places
 
+        $keyword->update($request->all());
 
-        $places = $request->get('places');
-        $keyword->places()->sync( $places );
+        $places = $request->places;
+        $keyword->places()->sync($places, false);
+
         return response()->json($keyword, 200);
     }
 

@@ -24,7 +24,7 @@ class Keyword extends Model
     protected $hidden = [];
 
     public function places()
-    {
+    {   
         return $this->belongsToMany(Place::class);
     }
 }
