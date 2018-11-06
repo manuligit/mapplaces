@@ -17,8 +17,8 @@ class CreateKeywordPlaceTable extends Migration
             $table->increments('id');
             $table->integer('place_id')->unsigned();
             $table->integer('keyword_id')->unsigned();
-            // $table->foreign('place_id')->references('id')->on('places')->onDelete('cascade');
-            // $table->foreign('keyword_id')->references('id')->on('keywords')->onDelete('cascade');
+            $table->foreign('place_id')->references('id')->on('places')->onDelete('cascade');
+            $table->foreign('keyword_id')->references('id')->on('keywords')->onDelete('cascade');
         });
     }
 

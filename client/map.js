@@ -6,11 +6,19 @@ var fetchDefaults = {
 };
 let base_url = "http://localhost:8000/api/places/";
 let filter = "";
-let current_places;
+let db_places;
 var infowindows = [];
 
 window.doFetch = (url, options) => fetch(url, Object.assign({}, fetchDefaults, options));
 window.getJson = (url, options) => doFetch(url, options).then(res => res.json());
+
+function filterButton() {
+  if (filter === "open") {
+    return `<button id="filter" value="" onclick="setFilter();"> Show all places</div>`
+  } else {
+    return `<button id="filter" value="open" onclick="setFilter();"> Show open places</div>`
+  }
+}
 
 function placeData(place) {
   return `<div id="content">
@@ -25,12 +33,25 @@ function placeData(place) {
 }
 
 function placeDataShort(place) {
+  let addKeywords = `<div></div>`;
+  // Test keywords by creating them by hand:
+  if (place.keywords && place.keywords.length > 0) {
+    console.log(place.keywords);
+    let keywords = `<div class="labels">`
+    place.keywords.map(e => keywords = keywords.concat(`\n  <div class="keyword">${e.label}</div>`));
+    keywords = keywords.concat(`\n</div>`)
+    // Add the "add keywords button:"
+    addKeywords = keywords.concat("\n" +addKeywords);
+    console.log(addKeywords)
+  }
+
   return `<div id="content">
             <p>${place.title}</p>
+            ${addKeywords}
             <button type="button" value=${place.id} onclick="addEditPlaceForm();">Edit</button>
             <button type="button" value=${place.id} onclick="removePlace();">Remove</button>
           </div>`
-}
+  }
 
  // <form action="http://localhost:8000/api/places/" method="POST">
 function createForm() {
@@ -116,11 +137,25 @@ function getFormData(tag) {
   return data;
 }
 
+function setFilter() {
+  event.preventDefault();
+  // Set the filter
+  filter = event.target.value;
+  console.log("filter")
+  // Update view
+  update();
+}
+
+// function resetFilter() {
+//   event.preventDefault();
+//   filter = "";
+//   console.log("filter removed")
+//   // Update view
+//   update();
+// }
+
 function addPlace() {
   event.preventDefault();
-  // console.log("addPlace");
-  // console.log(event)
-  // console.log("woong")
   //Send a fetch request with the parameters from the form
   const data = getFormData("form");
 
@@ -142,9 +177,7 @@ function addPlace() {
 
 function addEditPlaceForm() {
   event.preventDefault();
-  //console.log(places)
   let place = places.find(e => e.id === parseInt(event.target.value, 10)); 
-  //console.log(place)
   document.querySelector('.form').innerHTML = editForm(place);
 }
 
@@ -164,51 +197,87 @@ function editPlace(id) {
     });
 }
 
+function filterOpen() {
+  console.log('filteropen')
+  // Quick and dirty time check:
+  var time =  new Date();
+  var opens = new Date();
+  var closes = new Date();
+  opens.setSeconds(0);
+  closes.setSeconds(0);
+
+  var open_places = [];
+  db_places.forEach(e => {
+    // If the hours are not properly formatted, this not work <<
+    opens.setHours(e.opens_at.slice(0,2));
+    opens.setMinutes(e.opens_at.slice(3));
+    closes.setHours(e.closes_at.slice(0,2));
+    closes.setMinutes(e.closes_at.slice(3));
+
+    //console.log(isWithinRange(time, opens, closes))
+
+    if (opens.getTime() <= time.getTime() && time.getTime() <= closes.getTime()) {
+      open_places.push(e)
+    }
+
+  });
+
+  return open_places;
+}
+
 function update() {
+  console.log('pimpom',  dateFns.isToday(new Date()));
   //Get data from backends and update all items
   // Remove all markers if any
   if (markers && markers.length > 0) {
     markers.map(m => m.setMap(null));
   }
 
-  getData().then(places => {
+  getData().then(() => {
+    
+    if (filter && filter.length > 0) {
+      if (filter === "open") {
+        console.log("filter set");
+        places = filterOpen();
+      }
+      
+      //places = places.filter()
+    }
+    
     places.forEach(place => {
+      console.log(place)
       var marker = new google.maps.Marker({
         position: { lat: place.latitude, lng: place.longitude },
         map: map,
         title: place.title,
         place_id: place.id
-    });
+      });
 
-    // Create infowindow for the marker
-    var contentString = placeData(place);
+      // Create infowindow for the marker
+      var contentString = placeData(place);
 
-    var infowindow = new google.maps.InfoWindow({
-      content: contentString
-    });
+     var infowindow = new google.maps.InfoWindow({
+       content: contentString
+      });
 
-    marker.addListener('click', function() {
-      infowindow.open(map, marker);
+      marker.addListener('click', function() {
+        infowindow.open(map, marker);
+      })
+
+      markers.push(marker);
     })
 
-    markers.push(marker);
-
-  })
-
   document.querySelector('#menu').innerHTML = placeList();
-
+  document.querySelector('#filter').innerHTML= filterButton();
   // Empty form:
   document.querySelector('.form').innerHTML = createForm();
-})};
+  })
+};
 
 // Create a place list from all the data
 function placeList() {
   return "<div>" + places.map(p => placeDataShort(p)) + "</div>";
 }
-
-
-
-document.querySelector('.form').innerHTML = createForm();
 
 // Get the places data from backend
 function getData() {
@@ -218,11 +287,12 @@ function getData() {
       return response.json();
       
     }).then((responseJson) => {
-      places = responseJson;
+      // <<
+      db_places = responseJson;
+      places = db_places;
       return responseJson;
     });
 }
-
 
 //let places = [place1, place2];
 // Initialize the map:
@@ -264,6 +334,7 @@ function initMap() {
 
   map.addListener('click', function(e) {
     placeMarkerAndPanTo(e.latLng, map);
+    // Add markers to createForm
   });
 
   // var form = document.getElementById(".form"); 
@@ -280,11 +351,10 @@ removePlace = function () {
     // Find item by id/coords/some kind of identifying attribute:
     let removeId = parseInt(event.target.value, 10);
 
-    //console.log(coords);
     // Remove item from current markers: 
     let i = markers[0];
     
-    console.log(markers)
+    //console.log(markers)
     let marker = markers.find(e => e.place_id === removeId);
 
     //let marker = markers.map(e => e.id === removeId);

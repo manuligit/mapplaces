@@ -50,3 +50,8 @@ textarea {
     width: calc(12*--column-width);
     position: relative;
 }
+
+.labels {
+    background-color: grey;
+    color: white;
+}

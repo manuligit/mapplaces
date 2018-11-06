@@ -10,7 +10,7 @@ class PlaceController extends Controller
 
     public function showAllPlaces()
     {
-        return response()->json(Place::all());
+        return response()->json(Place::all()->load('keywords'));
     }
 
     public function showOnePlace($id)
