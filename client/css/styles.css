@@ -43,3 +43,10 @@ textarea {
     width: 90%;
     resize: none;
 }
+
+.searchbar {
+    border-style: solid 3px;
+    padding: 0.5rem;
+    width: calc(12*--column-width);
+    position: relative;
+}

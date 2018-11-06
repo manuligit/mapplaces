@@ -7,13 +7,10 @@ var fetchDefaults = {
 let base_url = "http://localhost:8000/api/places/";
 let filter = "";
 let current_places;
-
-//remove dis <<
-let init = false;
+var infowindows = [];
 
 window.doFetch = (url, options) => fetch(url, Object.assign({}, fetchDefaults, options));
 window.getJson = (url, options) => doFetch(url, options).then(res => res.json());
-
 
 function placeData(place) {
   return `<div id="content">
@@ -131,15 +128,16 @@ function addPlace() {
     {
         body: data,
         method: "post"
-    }).then(
-      console.log("request sent")
-    );
+    }).then((value) => {
+      console.log("request sent: " + value);
+      update();
+    });
     // then: run update on the markers/places list
     // if fails, add debugger
 
   //console.log(data)
   //nollaa formi
-  document.querySelector('.form').innerHTML = createForm();
+  //document.querySelector('.form').innerHTML = createForm();
 }
 
 function addEditPlaceForm() {
@@ -160,20 +158,48 @@ function editPlace(id) {
         body: data,
         method: "put",
         mode: 'cors'
-    }).then(
-      console.log("request sent")
-    );
-
+    }).then((value) => {
+      console.log("request sent: " + value);
+      update();
+    });
 }
 
 function update() {
-  //Get data from backends
-  //Update the view data currently on display
-  getData();
-  // Redraw items? 
+  //Get data from backends and update all items
+  // Remove all markers if any
+  if (markers && markers.length > 0) {
+    markers.map(m => m.setMap(null));
+  }
+
+  getData().then(places => {
+    places.forEach(place => {
+      var marker = new google.maps.Marker({
+        position: { lat: place.latitude, lng: place.longitude },
+        map: map,
+        title: place.title,
+        place_id: place.id
+    });
+
+    // Create infowindow for the marker
+    var contentString = placeData(place);
+
+    var infowindow = new google.maps.InfoWindow({
+      content: contentString
+    });
+
+    marker.addListener('click', function() {
+      infowindow.open(map, marker);
+    })
+
+    markers.push(marker);
+
+  })
+
+  document.querySelector('#menu').innerHTML = placeList();
+
   // Empty form:
   document.querySelector('.form').innerHTML = createForm();
-}
+})};
 
 // Create a place list from all the data
 function placeList() {
@@ -181,21 +207,6 @@ function placeList() {
 }
 
 
-// Former dummy data:
-// const place3 = {
-//   title: "Suomenlinnan kirjasto",
-//   description: "Librarby",
-//   latitude: 60.1462116, 
-//   longitude: 24.9846877,
-//   opens_at: 1300,
-//   closes_at: 1915
-// }
-
-//'title', 'description', 'latitude', 'longitude', 'opens_at', 'closes_at'
-
-// Get data from the backend:
-// fetch("http://localhost:8000/api/places/")
-// console.log('aaaaa');
 
 document.querySelector('.form').innerHTML = createForm();
 
@@ -223,38 +234,38 @@ function initMap() {
     zoom: 16
   });
 
-  getData().then(places => {
-    places.forEach(place => {
-      var marker = new google.maps.Marker({
-        position: { lat: place.latitude, lng: place.longitude },
-        map: map,
-        title: place.title,
-        place_id: place.id
-    });
+  update();
+//   getData().then(places => {
+//     places.forEach(place => {
+//       var marker = new google.maps.Marker({
+//         position: { lat: place.latitude, lng: place.longitude },
+//         map: map,
+//         title: place.title,
+//         place_id: place.id
+//     });
 
-    // Create infowindow for the marker
-    var contentString = placeData(place);
+//     // Create infowindow for the marker
+//     var contentString = placeData(place);
 
-    var infowindow = new google.maps.InfoWindow({
-      content: contentString
-    });
+//     var infowindow = new google.maps.InfoWindow({
+//       content: contentString
+//     });
 
-    marker.addListener('click', function() {
-      infowindow.open(map, marker);
-    })
+//     marker.addListener('click', function() {
+//       infowindow.open(map, marker);
+//     })
 
-    markers.push(marker);
+//     markers.push(marker);
 
-  })
+//   })
 
-  document.querySelector('#menu').innerHTML = placeList();
-});
+//   document.querySelector('#menu').innerHTML = placeList();
+// });
 
   map.addListener('click', function(e) {
     placeMarkerAndPanTo(e.latLng, map);
   });
 
-  init = true;
   // var form = document.getElementById(".form"); 
   // console.log(form)
   // function handleForm(event) { event.preventDefault();
@@ -266,23 +277,12 @@ function initMap() {
 // TODO: List behavior doesn't work properly with the remove due to indexing or something bug
 // First item on the list cannot be removed?
 removePlace = function () {
-    //event.preventDefault();
-    console.log('remove dis');
-    console.log(event.target);
-    console.log(event.target.value);
     // Find item by id/coords/some kind of identifying attribute:
     let removeId = parseInt(event.target.value, 10);
 
     //console.log(coords);
     // Remove item from current markers: 
     let i = markers[0];
-    console.log(i);
-
-    console.log(markers.length)
-    markers.forEach(e => {
-      console.log(e.position.lat())
-      console.log(e.place_id);
-    });
     
     console.log(markers)
     let marker = markers.find(e => e.place_id === removeId);
@@ -298,14 +298,13 @@ removePlace = function () {
     console.log(markers.length)
 
     // Send DELETE request to the server:
-    deleteFromServer(removeId).then(
+    deleteFromServer(removeId).then(() => {
       // Remove from places list << maybe redundant
-      places = places.filter(e => e.id !== removeId)
+      //places = places.filter(e => e.id !== removeId);
       // Check that the value is deleted from keywords:
-  
+      update();
       //Call update
-
-    )
+    })
   }
 }
 
@@ -322,11 +321,4 @@ function placeMarkerAndPanTo(latLng, map) {
     map: map
   });
   map.panTo(latLng);
-}
-
-if (!init) {
-  getData().then(
-    console.log(places)
-    //document.querySelector('#menu').innerHTML = placeList()
-  );
 }
