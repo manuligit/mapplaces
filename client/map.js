@@ -4,77 +4,23 @@ var places;
 var fetchDefaults = {
   mode: 'cors'
 };
-let base_url = "http://localhost:8000/api/places/";
+let base_url = "http://localhost:8000/api";
 let filter = "";
 let db_places;
 var infowindows = [];
 var search = "";
+var keywords = [];
 
-window.doFetch = (url, options) => fetch(url, Object.assign({}, fetchDefaults, options));
-window.getJson = (url, options) => doFetch(url, options).then(res => res.json());
+// window.doFetch = (url, options) => fetch(url, Object.assign({}, fetchDefaults, options));
+// window.getJson = (url, options) => doFetch(url, options).then(res => res.json());
 
-function filterButton() {
-  let button;
-  if (filter === "open") {
-    button = `<button id="filter" value="" onclick="setFilter();"> Show all places</div>`
-  } else {
-    button =`<button id="filter" value="open" onclick="setFilter();"> Show open places</div>`
-  }
-  return button;
-}
+//  * * * * * * * * * * * * * * * * * * * * * * * 
+//  *  V I E W S . j s                          *
+//  * * * * * * * * * * * * * * * * * * * * * * * 
 
-function searcbar() {
-  return `<input id="search" class="searchbar" oninput="searchPlaces();" value="${search}" placeholder="Search places"></input>`
-}
-
-function searchPlaces() {
-  event.preventDefault();
-
-  console.log(event.target.value)
-  filter = event.target.value;
-  search = event.target.value;
-  update();
-}
-
-function placeData(place) {
-  return `<div id="content">
-            <h1>${place.title}</h1>
-            <p>${place.description}</p>
-            <p>Opening hours: 
-            <time>${place.opens_at}</time>-<time>${place.closes_at}</time> </p>
-            <p>${place.latitude}, ${place.longitude}</p>
-            <button type="button" value=${place.id} onclick="addEditPlaceForm();">Edit</button>
-            <button type="button" value=${place.id} onclick="removePlace();">Remove</button>
-          </div>`
-}
-
-// Check/rewrite this function << 
-function placeDataShort(place) {
-  let addKeywords = ``;
-  // Test keywords by creating them by hand:
-  if (place.keywords && place.keywords.length > 0) {
-    console.log(place.keywords);
-    let keywords = `<div class="labels">`
-    place.keywords.map(e => keywords = keywords.concat(`\n  <div class="keyword">${e.label}</div>`));
-    keywords = keywords.concat(`\n</div>`)
-    // Add the "add keywords button:"
-    addKeywords = keywords.concat("\n" +addKeywords);
-    console.log(addKeywords)
-  }
-
-  return `<div id="content">
-            <p>${place.title}</p>
-            <button type="button" value=${place.id} onclick="addEditPlaceForm();">Edit</button>
-            <button type="button" value=${place.id} onclick="removePlace();">Remove</button>
-            <br />
-            ${addKeywords}
-          </div>`
-  }
-
- // <form action="http://localhost:8000/api/places/" method="POST">
 function createForm() {
   return `<div>
-            <form onsubmit="addPlace();">
+            <form class="createForm" onsubmit="addPlace();">
               <div>
                 <label htmlFor="title">
                   Title
@@ -111,7 +57,7 @@ function createForm() {
 function editForm(place) {
   console.log(place)
   return `<div>
-            <form onsubmit="editPlace(${place.id});">
+            <form class="editForm" onsubmit="editPlace(${place.id});">
               <div>
                 <label htmlFor="title">
                   Title
@@ -145,39 +91,109 @@ function editForm(place) {
           </div>`
 }
 
-// Get form data as URLSearchParams to send with fetch request by searching an element from the DOM
-function getFormData(tag) {
-  var formElement = document.querySelector(tag);
-  const data = new URLSearchParams();
-  for (const pair of new FormData(formElement)) {
-    data.append(pair[0], pair[1]);
-  }
-  return data;
+// Create a place list from all the data
+function placeList() {
+  return "<div class='placelist'>" + places.map(p => placeData(p)).join(' ') + "</div>";
 }
 
-function setFilter() {
+function filterButton() {
+  let button;
+  if (filter === "open") {
+    button = `<button id="filter" value="" onclick="setFilter();"> Show all places</div>`
+  } else {
+    button =`<button id="filter" value="open" onclick="setFilter();"> Show open places</div>`
+  }
+  return button;
+}
+
+function searcbar() {
+  return `<input id="search" class="searchbar" oninput="searchPlaces();" value="${search}" placeholder="Search places"></input>`
+}
+
+function placeData(place) {
+  let keywords = getKeywords(place);
+  //getKeywords(place);
+  return `<div id="content">
+            <h2>${place.title}</h2>
+            <p>${place.description}</p>
+            <p>Opening hours: 
+            <time>${place.opens_at}</time>-<time>${place.closes_at}</time> </p>
+            <p>${place.latitude}, ${place.longitude}</p>
+            ${keywords}
+            <button type="button" value=${place.id} onclick="addEditPlaceForm();">Edit</button>
+            <button type="button" value=${place.id} onclick="removePlace();">Remove</button>
+          </div>`
+}
+
+
+function getKeywords(place) {
+  let addKeywords = ``;
+  let keywords = ``;
+  // If place has keywords, display them:
+  
+  if (place.keywords && place.keywords.length > 0) {
+    //console.log(place.keywords);
+    // Create html structure for keywords:
+    keywords = `<div class="labels">`
+    place.keywords.map(e => keywords = keywords.concat(`\n  <div class="keyword">${e.label}</div>`));
+    keywords = keywords.concat(`\n</div>`)
+    //console.log(keywords)
+  }
+  // Display the "add keywords button:"
+  let button = `<button type="button" class="addKeyword" value=${place.id} onclick="addKeyword();">+</button><div class="keywordSearch"></div>`;
+  //addkeywords = keywords.concat(`\n ${button}`);
+  //console.log(keywords)
+  //console.log(keywords)
+  //addKeywords = keywords.concat(`\n ${button} \n ${addKeywords}`);
+  //console.log(addKeywords)
+  keywords = keywords.concat(`\n ${button}`);
+  keywords = keywords.concat(`\n<div class="keywordsearch"></div></div>`)
+  // Add the "add keywords button:"
+  addKeywords = keywords.concat("\n" +addKeywords);
+  //console.log(addKeywords)
+
+  return addKeywords;
+}
+
+function searchBarForm(id) {
+  return `<form id="searchBarForm" onsubmit="addKeywordToServer();">
+            <input id="label" type="text" name="label" required />
+            <input id="places" type="hidden" value=${[id]} name="places" required />
+            <input type="submit" value="+"/>
+          </form>`
+}
+
+// Add a new keyword
+function addKeyword() {
   event.preventDefault();
-  // Set the filter
+  console.log('klik')
+  // Show possible 
+  // function searchKeywords() {
+  let id = event.target.value;
+
+  // }
+  document.querySelector('.keywordsearch').innerHTML = searchBarForm(id);
+
+}
+
+// Update the filter and search keyword from the search bar:
+function searchPlaces() {
+  event.preventDefault();
+
+  console.log(event.target.value)
   filter = event.target.value;
-  console.log("filter")
-  // Update view
+  search = event.target.value;
   update();
 }
 
-// function resetFilter() {
-//   event.preventDefault();
-//   filter = "";
-//   console.log("filter removed")
-//   // Update view
-//   update();
-// }
-
-function addPlace() {
+// Send new keyword with place data to server:
+function addKeywordToServer() {
   event.preventDefault();
-  //Send a fetch request with the parameters from the form
-  const data = getFormData("form");
 
-  fetch(base_url,
+  //check if keywords already exists, if it does, update the place to keywords instead of adding it again
+  const data = getFormData("#searchBarForm");
+  console.log(data);
+  fetch(`${base_url}/keywords/`,
     {
         body: data,
         method: "post"
@@ -185,19 +201,7 @@ function addPlace() {
       console.log("request sent: " + value);
       update();
     });
-    // if fails, add debugger
-}
-
-function addKeyword() {
-  event.preventDefault();
-
-
-}
-
-function addEditPlaceForm() {
-  event.preventDefault();
-  let place = places.find(e => e.id === parseInt(event.target.value, 10)); 
-  document.querySelector('.form').innerHTML = editForm(place);
+    //if fails, add debugger
 }
 
 function editPlace(id) {
@@ -205,7 +209,7 @@ function editPlace(id) {
   console.log(id)
 
   const data = getFormData("form");
-  fetch(`${base_url}${id}`,
+  fetch(`${base_url}/places/${id}`,
     {
         body: data,
         method: "put",
@@ -216,6 +220,52 @@ function editPlace(id) {
     });
 }
 
+
+
+// Delete a place from the server:
+function deleteKeywordFromServer(id) {
+  return fetch(`${base_url}/keywords/${id}`, { method: "DELETE", mode: "cors" })
+  .then(
+    console.log("Keyword deleted")
+  );
+}
+
+
+
+
+//  * * * * * * * * * * * * * * * * * * * * * * * 
+//  *  F U N C T I O N S . j s                  *
+//  * * * * * * * * * * * * * * * * * * * * * * * 
+
+// Get form data as URLSearchParams to send with fetch request by searching an element from the DOM
+function getFormData(tag) {
+  var formElement = document.querySelector(tag);
+  const data = new URLSearchParams();
+  for (const pair of new FormData(formElement)) {
+    console.log('a');
+    data.append(pair[0], pair[1]);
+  }
+  return data;
+}
+
+// Set filter to wanted value:
+function setFilter() {
+  event.preventDefault();
+  // Set the filter
+  filter = event.target.value;
+  console.log("filter")
+  // Update view
+  update();
+}
+
+// Change the add place-form to edit place-form: <<
+function addEditPlaceForm() {
+  event.preventDefault();
+  let place = places.find(e => e.id === parseInt(event.target.value, 10)); 
+  document.querySelector('.form').innerHTML = editForm(place);
+}
+
+// Show only open places on map:
 function filterOpen() {
   console.log('filteropen')
   // Quick and dirty time check:
@@ -233,16 +283,6 @@ function filterOpen() {
 
     closes.setHours(e.closes_at.slice(0,2));
     closes.setMinutes(e.closes_at.slice(3));
-    // console.log(closes.getHours(), closes.getMinutes())
-    // console.log(e.opens_at)
-
-
-    // console.log(opens.getTime())
-    // console.log(time.getTime())
-    // console.log(closes.getTime())
-    // console.log(opens.getTime() <= time.getTime())
-
-    //console.log(isWithinRange(time, opens, closes))
 
     if (opens.getTime() <= time.getTime() && time.getTime() <= closes.getTime()) {
       open_places.push(e)
@@ -257,6 +297,7 @@ function filterOpen() {
   return open_places;
 }
 
+// Filter places according to the filter:
 function filterSearch() {
   console.log("filterseatch")
   var matches = [];
@@ -267,8 +308,9 @@ function filterSearch() {
   return matches; 
 }
 
+// Update the view
 function update() {
-  console.log('pimpom',  dateFns.isToday(new Date()));
+  console.log('update')
   //Get data from backends and update all items
   // Remove all markers if any
   if (markers && markers.length > 0) {
@@ -289,7 +331,7 @@ function update() {
     }
     
     places.forEach(place => {
-      console.log(place)
+      //console.log(place)
       var marker = new google.maps.Marker({
         position: { lat: place.latitude, lng: place.longitude },
         map: map,
@@ -321,12 +363,82 @@ function update() {
   })
 };
 
-// Create a place list from all the data
-function placeList() {
-  return "<div class='placelist'>" + places.map(p => placeDataShort(p)).join(' ') + "</div>";
+//  * * * * * * * * * * * * * * * * * * * * * * * 
+//  *  M A P  . j s                             *
+//  * * * * * * * * * * * * * * * * * * * * * * * 
+
+
+// Initialize the map:
+function initMap() {
+  //Check if the map initialization can be done according to the markers: <<
+  map = new google.maps.Map(document.getElementById('map'), {
+    center: {lat: 60.147497, lng: 24.988798},
+    zoom: 16
+  });
+
+  update();
+
+  // Add functionality to get coordinates from map to here
+  map.addListener('click', function(e) {
+    console.log(e.latLng.lat());
+    console.log(e.latLng.lng())
+  });
+    // var infowindow = new google.maps.InfoWindow({
+    //   content: `${e.latLng.lat()}, ${e.latLng.lat()}`
+    //  });
+
+    // placeMarkerAndPanTo(e.latLng, map);
+    // Add markers to createForm
 }
 
-// Get the places data from backend
+// TODO: List behavior doesn't work properly with the remove due to indexing or something bug <<
+// First item on the list cannot be removed?
+function removePlace() {
+  // Find item by id/coords/some kind of identifying attribute:
+  let removeId = parseInt(event.target.value, 10);
+
+  // Remove item from current markers: 
+  let i = markers[0];
+  
+  //console.log(markers)
+  let marker = markers.find(e => e.place_id === removeId);
+
+  //let marker = markers.map(e => e.id === removeId);
+  console.log(marker)
+  // Remove marker from map:
+  marker.setMap(null);
+  console.log(marker.map)
+
+  // Remove marker from markers: <<
+  markers = markers.filter(e => e.place_id !== removeId);
+  console.log(markers.length)
+
+  // Send DELETE request to the server:
+  deletePlaceFromServer(removeId).then(() => {
+    // Remove from places list << maybe redundant
+    //places = places.filter(e => e.id !== removeId);
+    // Check that the value is deleted from keywords:
+    update();
+    //Call update
+  })
+}
+
+
+// Place a marker on the map:
+function placeMarkerAndPanTo(latLng, map) {
+  var marker = new google.maps.Marker({
+    position: latLng,
+    map: map
+  });
+  map.panTo(latLng);
+}
+
+
+//  * * * * * * * * * * * * * * * * * * * * * * * 
+//  *  R O U T E R . j s                        *
+//  * * * * * * * * * * * * * * * * * * * * * * * 
+
+// Get the places data from backend <<
 function getData() {
   console.log('getdata')
   return fetch('http://localhost:8000/api/places/', { mode: "cors" })
@@ -337,118 +449,90 @@ function getData() {
       // <<
       db_places = responseJson;
       places = db_places;
+      
       return responseJson;
     });
 }
 
-//let places = [place1, place2];
-// Initialize the map:
 
-//Check if the map initialization can be done according to the markers:
-function initMap() {
-  map = new google.maps.Map(document.getElementById('map'), {
-    center: {lat: 60.147497, lng: 24.988798},
-    zoom: 16
-  });
+function addPlace() {
+  event.preventDefault();
+  //Send a fetch request with the parameters from the form
+  const data = getFormData(".createForm");
 
-  update();
-//   getData().then(places => {
-//     places.forEach(place => {
-//       var marker = new google.maps.Marker({
-//         position: { lat: place.latitude, lng: place.longitude },
-//         map: map,
-//         title: place.title,
-//         place_id: place.id
-//     });
-
-//     // Create infowindow for the marker
-//     var contentString = placeData(place);
-
-//     var infowindow = new google.maps.InfoWindow({
-//       content: contentString
-//     });
-
-//     marker.addListener('click', function() {
-//       infowindow.open(map, marker);
-//     })
-
-//     markers.push(marker);
-
-//   })
-
-//   document.querySelector('#menu').innerHTML = placeList();
-// });
-
-  // Add functionality to get coordinates from map to here
-  map.addListener('click', function(e) {
-    console.log(e.latLng.lat());
-    console.log(e.latLng.lng())
-
-    // var infowindow = new google.maps.InfoWindow({
-    //   content: `${e.latLng.lat()}, ${e.latLng.lat()}`
-    //  });
-
-
-
-    // placeMarkerAndPanTo(e.latLng, map);
-    // Add markers to createForm
-
-
-
-  });
-
-  // var form = document.getElementById(".form"); 
-  // console.log(form)
-  // function handleForm(event) { event.preventDefault();
-  // console.log("handleform") } 
-  // form.addEventListener('submit', handleForm);
-
-
-
-// TODO: List behavior doesn't work properly with the remove due to indexing or something bug
-// First item on the list cannot be removed?
-removePlace = function () {
-    // Find item by id/coords/some kind of identifying attribute:
-    let removeId = parseInt(event.target.value, 10);
-
-    // Remove item from current markers: 
-    let i = markers[0];
-    
-    //console.log(markers)
-    let marker = markers.find(e => e.place_id === removeId);
-
-    //let marker = markers.map(e => e.id === removeId);
-    console.log(marker)
-    // Remove marker from map:
-    marker.setMap(null);
-    console.log(marker.map)
-
-    // Remove marker from markers: <<
-    markers = markers.filter(e => e.place_id !== removeId);
-    console.log(markers.length)
-
-    // Send DELETE request to the server:
-    deleteFromServer(removeId).then(() => {
-      // Remove from places list << maybe redundant
-      //places = places.filter(e => e.id !== removeId);
-      // Check that the value is deleted from keywords:
+  fetch(`${base_url}/places/`,
+    {
+        body: data,
+        method: "post"
+    }).then((value) => {
+      console.log("request sent: " + value);
       update();
-      //Call update
-    })
-  }
+    });
+    // if fails, add debugger
 }
 
-function deleteFromServer(id) {
-  return fetch(`http://localhost:8000/api/places/${id}`, { method: "DELETE", mode: "cors" })
+function editPlace(id) {
+  event.preventDefault();
+  console.log(id)
+
+  const data = getFormData(".editForm");
+  fetch(`${base_url}/places/${id}`,
+    {
+        body: data,
+        method: "put",
+        mode: 'cors'
+    }).then((value) => {
+      console.log("request sent: " + value);
+      update();
+    });
+}
+
+// Delete a place from the server:
+function deletePlaceFromServer(id) {
+  return fetch(`${base_url}/places/${id}`, { method: "DELETE", mode: "cors" })
   .then(
     console.log("Place deleted")
   );
 }
 
-function placeMarkerAndPanTo(latLng, map) {
-  var marker = new google.maps.Marker({
-    position: latLng,
-    map: map
-  });
-  map.panTo(latLng);
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // Check/rewrite this function << 
+// function placeDataShort(place) {
+//   let addKeywords = ``;
+//   // Test keywords by creating them by hand:
+//   if (place.keywords && place.keywords.length > 0) {
+//     console.log(place.keywords);
+//     let keywords = `<div class="labels">`
+//     place.keywords.map(e => keywords = keywords.concat(`\n  <div class="keyword">${e.label}</div>`));
+//     let button = `<button type="button" class="addKeyword" onclick="addKeyword();">+</button><div class="keywordSearch"></div>`;
+//     keywords = keywords.concat(`\n ${button}`);
+//     keywords = keywords.concat(`\n</div>`)
+//     // Add the "add keywords button:"
+//     addKeywords = keywords.concat("\n" +addKeywords);
+//     console.log(addKeywords)
+//   }
+
+//   return `<div id="content">
+//             <p>${place.title}</p>
+//             <button type="button" value=${place.id} onclick="addEditPlaceForm();">Edit</button>
+//             <button type="button" value=${place.id} onclick="removePlace();">Remove</button>
+//             <br />
+//             ${addKeywords}
+//           </div>`
+// }
+
+
+
+ // <form action="http://localhost:8000/api/places/" method="POST">
