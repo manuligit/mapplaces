@@ -48,8 +48,9 @@ function placeData(place) {
           </div>`
 }
 
+// Check/rewrite this function << 
 function placeDataShort(place) {
-  let addKeywords = `<div></div>`;
+  let addKeywords = ``;
   // Test keywords by creating them by hand:
   if (place.keywords && place.keywords.length > 0) {
     console.log(place.keywords);
@@ -63,9 +64,10 @@ function placeDataShort(place) {
 
   return `<div id="content">
             <p>${place.title}</p>
-            ${addKeywords}
             <button type="button" value=${place.id} onclick="addEditPlaceForm();">Edit</button>
             <button type="button" value=${place.id} onclick="removePlace();">Remove</button>
+            <br />
+            ${addKeywords}
           </div>`
   }
 
@@ -183,12 +185,13 @@ function addPlace() {
       console.log("request sent: " + value);
       update();
     });
-    // then: run update on the markers/places list
     // if fails, add debugger
+}
 
-  //console.log(data)
-  //nollaa formi
-  //document.querySelector('.form').innerHTML = createForm();
+function addKeyword() {
+  event.preventDefault();
+
+
 }
 
 function addEditPlaceForm() {
@@ -320,7 +323,7 @@ function update() {
 
 // Create a place list from all the data
 function placeList() {
-  return "<div>" + places.map(p => placeDataShort(p)) + "</div>";
+  return "<div class='placelist'>" + places.map(p => placeDataShort(p)).join(' ') + "</div>";
 }
 
 // Get the places data from backend
@@ -376,6 +379,7 @@ function initMap() {
 //   document.querySelector('#menu').innerHTML = placeList();
 // });
 
+  // Add functionality to get coordinates from map to here
   map.addListener('click', function(e) {
     console.log(e.latLng.lat());
     console.log(e.latLng.lng())

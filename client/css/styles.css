@@ -53,7 +53,7 @@ textarea {
     position: relative;
 }
 
-.labels {
+.keyword {
     border-radius: 13px;
     padding: 0.1em 0.5em;
     background-color: rgba(128, 128, 128, 0.637);
@@ -63,4 +63,5 @@ textarea {
     font-weight: lighter;
     width: auto;
     display: inline-block;
+    margin-top: 1em;
 }
