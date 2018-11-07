@@ -6,9 +6,7 @@ let filter = "";
 let db_places;
 var search = "";
 var keywords = [];
-
-// window.doFetch = (url, options) => fetch(url, Object.assign({}, fetchDefaults, options));
-// window.getJson = (url, options) => doFetch(url, options).then(res => res.json());
+var keywordfilter = [];
 
 //  * * * * * * * * * * * * * * * * * * * * * * * 
 //  *  V I E W S . j s                          *
@@ -52,13 +50,14 @@ function createForm() {
 
 function editForm(place) {
   console.log(place)
+  console.log(place.title)
   return `<div>
             <form class="editForm" onsubmit="editPlace(${place.id});">
               <div>
                 <label htmlFor="title">
                   Title
                 </label>
-                <input id="title" type="text" name="title" value=${place.title} required />
+                <input id="title" type="text" name="title" value="${place.title}" required />
               </div>
               <div>
                 <label htmlFor="description">
@@ -98,7 +97,7 @@ function searchBlock() {
 function formBlock() {
   return `<div class="formBlock block">
             <button id="formBlock" class="menu" value="small" onclick="toggleBlock2();">+</button>
-            <h3>Add a new place</h3>
+            <h3>Add or edit a place</h3>
             <div id="formContainer"></div>
           </div>`
 }
@@ -114,17 +113,31 @@ function largeSearchBlock() {
 function keywordList() {
   return `<ul class='keywordlist'>` + 
             keywords.map(p => keywordData(p)).join(' ') + 
-  
         `</ul>`;
 }
 
 function keywordData(keyword) {
   return `<li>
             <label>
-              <input type="checkbox" value=${keyword.id}/>
+              <input type="checkbox" onclick="filterWithKeywords();" value=${keyword.id} />
               ${keyword.label}
             </label>
           </li>`;
+}
+
+// Add keywords to filter with keyword id
+function filterWithKeywords() {
+  let id = event.target.value;
+  // If keyword is already on list, remove
+  if (keywordfilter.includes(id)) {
+    console.log('contains ', id)
+    keywordfilter = keywordfilter.filter(e => e !== id);
+  // Add keyword to filter list
+  } else {
+    console.log('add ', id)
+    keywordfilter.push(id);
+  }
+  update();
 }
 
 function largeFormBlock() {
@@ -133,6 +146,7 @@ function largeFormBlock() {
 
 //Toggle between big and smol block
 function toggleBlock() {
+  console.log('toggle')
   event.preventDefault();
   if (event.target.value === "small") {
     //console.log('smol')
@@ -165,11 +179,12 @@ function placeList() {
 }
 
 function filterButton() {
+  console.log("filterbutton", filter)
   let button;
   if (filter === "open") {
-    button = `<button id="filter" value="" onclick="setFilter();"> Show all places</div>`
+    button = `<button id="filterButton" value="" onclick="setFilter();"> Show all places</div>`
   } else {
-    button =`<button id="filter" value="open" onclick="setFilter();"> Show open places</div>`
+    button =`<button id="filterButton" value="open" onclick="setFilter();"> Show open places</div>`
   }
   return button;
 }
@@ -236,9 +251,7 @@ function addKeyword() {
   // Show possible 
   // function searchKeywords() {
   let id = event.target.value;
-
   // }
-
   document.querySelector(`.keywordsearch${id}`).innerHTML = searchBarForm(id);
 
 }
@@ -256,12 +269,25 @@ function searchPlaces() {
 // Send new keyword with place data to server:
 function addKeywordToServer() {
   event.preventDefault();
-
-  //check if keywords already exists, if it does, update the place to keywords instead of adding it again
-
-
   const data = getFormData("#searchBarForm");
-  console.log(data.toString());
+  //console.log(data);
+  
+  // Check if the new label already exists:
+  let items = Array.from(data.entries());
+  let label = items[0][1];
+  let labels = keywords.map(e => e.label.toLowerCase());
+
+  if (labels.includes(label.toLowerCase())) {
+    console.log('match')
+    //addPlaceToKeyword()
+    let keyword = keywords.find(e => e.label.toLowerCase() === label.toLowerCase());
+    //console.log(keyword)
+    //console.log(items[1][1])
+    // Do put request instead of adding new:
+    console.log(keyword.id, items[1])
+    addPlaceToKeyword(keyword.id, parseInt(items[1][1],10));
+  } else {
+
   fetch(`${base_url}/keywords/`,
     {
         body: data,
@@ -271,31 +297,62 @@ function addKeywordToServer() {
       update();
     });
     //if fails, add debugger
+  }
 }
 
-function editKeyword(id) {
-  event.preventDefault();
-  console.log(id)
-
-  const data = getFormData("form");
-  fetch(`${base_url}/places/${id}`,
-    {
-        body: data,
-        method: "put",
-        mode: 'cors'
-    }).then((value) => {
-      console.log("request sent: " + value);
-      update();
-    });
+function editLabel() {
+  // Get data... 
 }
+
+function addPlaceToKeyword(keyword_id, place_id) {
+  console.log(keyword_id, place_id)
+  let keyword = keywords.find(e => e.id === keyword_id);
+  console.log(keyword)
+  // Check that label exists just in case
+  if (keyword) {
+    console.log('found keyword with label ', keyword.label);
+    let places = keyword.places.map(e => e.id);
+    
+    // If place is already included, remove it:
+    if (places.includes(place_id)) {
+      places = places.filter(e => e != place_id);
+    } else {
+      places = places.concat(place_id);
+    }
+
+    // Create the data for request: 
+    let data = JSON.stringify({ "label": keyword.label, "places": places });
+    console.log(data);
+
+    editKeyword(keyword_id, data);
+  }
+}
+
+
+// function editKeyword(id) {
+//   event.preventDefault();
+//   console.log(id)
+
+//   const data = getFormData("form");
+//   fetch(`${base_url}/places/${id}`,
+//     {
+//         body: data,
+//         method: "put",
+//         mode: 'cors'
+//     }).then((value) => {
+//       console.log("request sent: " + value);
+//       update();
+//     });
+// }
 
 // Remove a keyword from a place:
-function editKeyword(id) {
-  event.preventDefault();
-  const data = getFormData("form");
-  fetch(`${base_url}/places/${id}`,
+function editKeyword(id, data) {
+  //event.preventDefault();
+  //const data = getFormData("form");
+  fetch(`${base_url}/keywords/${id}`,
     {
         body: data,
+        headers:{'content-type': 'application/json'},
         method: "put",
         mode: 'cors'
     }).then((value) => {
@@ -321,7 +378,6 @@ function getFormData(tag) {
   var formElement = document.querySelector(tag);
   const data = new URLSearchParams();
   for (const pair of new FormData(formElement)) {
-    console.log('a');
     data.append(pair[0], pair[1]);
   }
   return data;
@@ -366,11 +422,10 @@ function filterOpen() {
     if (opens.getTime() <= time.getTime() && time.getTime() <= closes.getTime()) {
       open_places.push(e)
     } else {
-      console.log('NOT OPEN:')
-      console.log(opens.getHours(), opens.getMinutes())
-      console.log(closes.getHours(), closes.getMinutes())
+      // console.log('NOT OPEN:')
+      // console.log(opens.getHours(), opens.getMinutes())
+      // console.log(closes.getHours(), closes.getMinutes())
     }
-
   });
 
   return open_places;
@@ -378,13 +433,19 @@ function filterOpen() {
 
 // Filter places according to the filter:
 function filterSearch() {
-  console.log("filterseatch")
+  //console.log("filterseatch")
   var matches = [];
 
   if (filter.length > 0) {
     matches = db_places.filter(e => e.title.toLowerCase().includes(filter.toLowerCase()));
   }
   return matches; 
+}
+
+function arrayContainsArray (superset, subset) {
+  return subset.every(function (value) {
+    return (superset.indexOf(value) >= 0);
+  });
 }
 
 // Update the view
@@ -398,7 +459,6 @@ function update() {
 
   // Start adding stuff to map after getting data:
   getData().then(() => {
-    
     if (filter && filter.length > 0) {
       if (filter === "open") {
         console.log("filter set");
@@ -406,9 +466,31 @@ function update() {
       } else {
         places = filterSearch();
       }
-      
       //places = places.filter()
     }
+
+    // Filter with keywords: <<<<<<<
+    // Check that place's list of keywords includes every keyword in keywordfilter
+    if (keywordfilter.length > 0) {
+
+      console.log('keywordfilter', keywordfilter)
+      //Filter by places of keywords on the list           
+      // keywordfilter.forEach(e => {
+      //   kw = keywords.filter(k => k.id === e);
+      //   places = kw.places;
+      //   //kw = keywords[]
+      //   //array1.filter(value => -1 !== array2.indexOf(value));
+      // });
+
+
+      // places = places.filter(p => keywordfilter.every(function (value) {
+      //   console.log(p.keywords)
+      //   console.log((p.keywords.indexOf(value) >= 0))
+      //   return (p.keywords.indexOf(value) >= 0)
+      // }));
+
+    }
+    
     
     places.forEach(place => {
       //console.log(place)
@@ -422,7 +504,7 @@ function update() {
       // Create infowindow for the marker
       var contentString = placeDataShort(place);
 
-     var infowindow = new google.maps.InfoWindow({
+      var infowindow = new google.maps.InfoWindow({
        content: contentString
       });
 
@@ -431,19 +513,28 @@ function update() {
       })
 
       markers.push(marker);
-    })
+    });
 
   // Don't refresh searchblock if search/filter is on:
-  if (filter.length < 1) { 
+  if (filter.length < 1 && keywordfilter.length < 1) { 
     document.querySelector('#filter').innerHTML = searchBlock();
+    // Only change the button, if filter is set to open: << 
+  } else if (filter === "open") {
+    document.querySelector('#filterButton').innerHTML = `<button id="filter" value="" onclick="setFilter();"> Show all places</div>`
   }
 
   //document.querySelector('#filter').innerHTML= searchBlock();
   document.querySelector('.form').innerHTML = formBlock();
 
-  
+  // if places.lehngth = 0, return "No places found"
   //document.querySelector('#searchbar')
+  
+
   document.querySelector('#menu').innerHTML = placeList();
+
+  if (places.length === 0) {
+    document.querySelector('#menu').innerHTML = `<p>No places found :(</p>`
+  }
   //document.querySelector('.form').innerHTML = createForm();
 
   })
@@ -507,7 +598,6 @@ function removePlace() {
   })
 }
 
-
 // Place a marker on the map:
 function placeMarkerAndPanTo(latLng, map) {
   var marker = new google.maps.Marker({
@@ -516,7 +606,6 @@ function placeMarkerAndPanTo(latLng, map) {
   });
   map.panTo(latLng);
 }
-
 
 //  * * * * * * * * * * * * * * * * * * * * * * * 
 //  *  R O U T E R . j s                        *
