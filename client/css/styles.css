@@ -22,12 +22,11 @@
     float: right;
     margin: 20px;
     padding: 20px;
-    height: 700px;
+    height: 90vh;
     overflow: scroll;
     border: solid 1px grey;
 }
-/* 
-Optional: Makes the sample page fill the window.  */
+
 html, body {
     height: 100%;
     width: 100%;
@@ -64,4 +63,26 @@ textarea {
     width: auto;
     display: inline-block;
     margin-top: 1em;
+}
+
+.addKeyword {
+    border-radius: 13px;
+    padding: 0.1em 0.5em;
+    background-color: rgba(128, 128, 128, 0.637); 
+    display: inline;
+    color: white;
+}
+
+#content {
+    padding: 1em 0em;
+    border-top: 1px solid rgba(128, 128, 128, 0.637);
+}
+
+h2 {
+    border-bottom: 1px solid rgba(128, 128, 128, 0.637);
+    margin-bottom: 1em;
+}
+
+span {
+    color: green;
 }

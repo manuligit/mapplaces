@@ -31,7 +31,7 @@ class KeywordController extends Controller
 
         // Add keyword to place:
         if (isset($place_id)) {
-            $place = Place::findOrFail($place_id[0]);
+            $place = Place::findOrFail($place_id);
             $keyword->places()->sync($place, false);
         }
 

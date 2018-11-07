@@ -115,44 +115,42 @@ function placeData(place) {
   //getKeywords(place);
   return `<div id="content">
             <h2>${place.title}</h2>
+            <button type="button" value=${place.id} onclick="addEditPlaceForm();">Edit</button>
+            <button type="button" value=${place.id} onclick="removePlace();">Remove</button>
             <p>${place.description}</p>
             <p>Opening hours: 
             <time>${place.opens_at}</time>-<time>${place.closes_at}</time> </p>
             <p>${place.latitude}, ${place.longitude}</p>
             ${keywords}
-            <button type="button" value=${place.id} onclick="addEditPlaceForm();">Edit</button>
-            <button type="button" value=${place.id} onclick="removePlace();">Remove</button>
           </div>`
 }
 
+function placeDataShort(place) {
+  return `<div id="short_content">
+            <h2>${place.title}</h2>
+            <p>${place.description}</p>
+            <p>Opening hours: 
+            <time>${place.opens_at}</time>-<time>${place.closes_at}</time> </p>
+            <p>${place.latitude}, ${place.longitude}</p>
+          </div>`
+}
 
 function getKeywords(place) {
-  let addKeywords = ``;
+  let labels = `<div class="labels">`;
   let keywords = ``;
   // If place has keywords, display them:
   
-  if (place.keywords && place.keywords.length > 0) {
-    //console.log(place.keywords);
     // Create html structure for keywords:
-    keywords = `<div class="labels">`
+  if (place.keywords && place.keywords.length > 0) {
     place.keywords.map(e => keywords = keywords.concat(`\n  <div class="keyword">${e.label}</div>`));
-    keywords = keywords.concat(`\n</div>`)
-    //console.log(keywords)
   }
   // Display the "add keywords button:"
   let button = `<button type="button" class="addKeyword" value=${place.id} onclick="addKeyword();">+</button><div class="keywordSearch"></div>`;
-  //addkeywords = keywords.concat(`\n ${button}`);
-  //console.log(keywords)
-  //console.log(keywords)
-  //addKeywords = keywords.concat(`\n ${button} \n ${addKeywords}`);
-  //console.log(addKeywords)
-  keywords = keywords.concat(`\n ${button}`);
-  keywords = keywords.concat(`\n<div class="keywordsearch"></div></div>`)
-  // Add the "add keywords button:"
-  addKeywords = keywords.concat("\n" +addKeywords);
-  //console.log(addKeywords)
 
-  return addKeywords;
+  keywords = keywords.concat(`\n ${button}`);
+  keywords = keywords.concat(`\n<div class="keywordsearch${place.id}"></div>`)
+  labels = labels.concat(`${keywords} \n </div>`)
+  return labels;
 }
 
 function searchBarForm(id) {
@@ -172,7 +170,8 @@ function addKeyword() {
   let id = event.target.value;
 
   // }
-  document.querySelector('.keywordsearch').innerHTML = searchBarForm(id);
+
+  document.querySelector(`.keywordsearch${id}`).innerHTML = searchBarForm(id);
 
 }
 
@@ -191,8 +190,10 @@ function addKeywordToServer() {
   event.preventDefault();
 
   //check if keywords already exists, if it does, update the place to keywords instead of adding it again
+
+
   const data = getFormData("#searchBarForm");
-  console.log(data);
+  console.log(data.toString());
   fetch(`${base_url}/keywords/`,
     {
         body: data,
@@ -204,7 +205,7 @@ function addKeywordToServer() {
     //if fails, add debugger
 }
 
-function editPlace(id) {
+function editKeyword(id) {
   event.preventDefault();
   console.log(id)
 
@@ -220,18 +221,34 @@ function editPlace(id) {
     });
 }
 
+// Remove a keyword from a place:
+function editKeyword(id) {
+  event.preventDefault();
+  //console.log(id)
+
+  // Do data by hand:
 
 
-// Delete a place from the server:
-function deleteKeywordFromServer(id) {
+
+  const data = getFormData("form");
+  fetch(`${base_url}/places/${id}`,
+    {
+        body: data,
+        method: "put",
+        mode: 'cors'
+    }).then((value) => {
+      console.log("request sent: " + value);
+      update();
+    });
+}
+
+// Delete a keyword from the server:
+function deleteKeyword(id) {
   return fetch(`${base_url}/keywords/${id}`, { method: "DELETE", mode: "cors" })
   .then(
     console.log("Keyword deleted")
   );
 }
-
-
-
 
 //  * * * * * * * * * * * * * * * * * * * * * * * 
 //  *  F U N C T I O N S . j s                  *
@@ -317,6 +334,7 @@ function update() {
     markers.map(m => m.setMap(null));
   }
 
+  // Start adding stuff to map after getting data:
   getData().then(() => {
     
     if (filter && filter.length > 0) {
@@ -340,7 +358,7 @@ function update() {
       });
 
       // Create infowindow for the marker
-      var contentString = placeData(place);
+      var contentString = placeDataShort(place);
 
      var infowindow = new google.maps.InfoWindow({
        content: contentString
@@ -378,11 +396,16 @@ function initMap() {
 
   update();
 
-  // Add functionality to get coordinates from map to here
+  // Clicking on map changes the coordinates on map every time
   map.addListener('click', function(e) {
-    console.log(e.latLng.lat());
-    console.log(e.latLng.lng())
+    let lat = document.querySelector('#latitude');
+    lat.value=e.latLng.lat();
+    let lng = document.querySelector('#longitude');
+    lng.value=e.latLng.lng();
+    // console.log(e.latLng.lat());
+    // console.log(e.latLng.lng())
   });
+
     // var infowindow = new google.maps.InfoWindow({
     //   content: `${e.latLng.lat()}, ${e.latLng.lat()}`
     //  });
@@ -449,11 +472,24 @@ function getData() {
       // <<
       db_places = responseJson;
       places = db_places;
-      
+
+      // Also fetch keyword data: <<
+      getKeywordData().then((data) => {
+        keywords = data;
+        //console.log(keywords);
+        return responseJson;
+      });
+    });
+  }
+
+  function getKeywordData() {
+    return fetch('http://localhost:8000/api/keywords/', { mode: "cors" })
+    .then(function(response) {
+      return response.json();
+    }).then((responseJson) => {
       return responseJson;
     });
-}
-
+  }
 
 function addPlace() {
   event.preventDefault();
