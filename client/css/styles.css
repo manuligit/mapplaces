@@ -35,11 +35,6 @@ html, body {
     font-family: 'Work Sans', sans-serif;
 }
 
-.form {
-    padding: 1.5em;
-    background-color: lightgray;
-}
-
 textarea {
     width: 90%;
     resize: none;
@@ -78,6 +73,11 @@ textarea {
     border-top: 1px solid rgba(128, 128, 128, 0.637);
 }
 
+h3 {
+    font-size: 16px;
+    font-style: italic;
+}
+
 h2 {
     border-bottom: 1px solid rgba(128, 128, 128, 0.637);
     margin-bottom: 1em;
@@ -85,4 +85,36 @@ h2 {
 
 span {
     color: green;
+}
+
+#filter {
+    margin-top: 0px;
+    background-color: rgba(147, 112, 216, 0.524);
+    margin-bottom: 1em;
+}
+
+#menu {
+    background-color: rgba(102, 205, 171, 0.51);
+    margin-bottom: 1em;
+}
+
+#form {
+    background-color: rgba(72, 209, 205, 0.544);
+    margin-bottom: 1em;
+}
+
+button.menu {
+    color: blue;
+    border-radius: 15px;
+    position: absolute;
+    right: 0;
+}
+
+.block {
+    position: relative;
+    padding: 10px 0px;
+}
+
+ul {
+    list-style-type: none;
 }

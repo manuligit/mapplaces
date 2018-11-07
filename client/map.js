@@ -1,13 +1,9 @@
 var map;
 var markers = [];
 var places;
-var fetchDefaults = {
-  mode: 'cors'
-};
 let base_url = "http://localhost:8000/api";
 let filter = "";
 let db_places;
-var infowindows = [];
 var search = "";
 var keywords = [];
 
@@ -91,6 +87,78 @@ function editForm(place) {
           </div>`
 }
 
+function searchBlock() {
+  return `<div class="searchBlock block">
+            <button id="searchBlock" class="menu" value="small" onclick="toggleBlock();">+</button>
+            <h3>Search or filter places</h3>
+            <div id="togglable"></div>
+          </div>`
+}
+
+function formBlock() {
+  return `<div class="formBlock block">
+            <button id="formBlock" class="menu" value="small" onclick="toggleBlock2();">+</button>
+            <h3>Add a new place</h3>
+            <div id="formContainer"></div>
+          </div>`
+}
+
+// Add keyword filter block here <<
+function largeSearchBlock() {
+  return `<div>` + searchbar() + `<br />` + filterButton() + keywordList() + `</div>`
+  // return `<div>
+  //           <h1>HELLO SEARCH BLOCK</h1>
+  //         </div>`
+}
+
+function keywordList() {
+  return `<ul class='keywordlist'>` + 
+            keywords.map(p => keywordData(p)).join(' ') + 
+  
+        `</ul>`;
+}
+
+function keywordData(keyword) {
+  return `<li>
+            <label>
+              <input type="checkbox" value=${keyword.id}/>
+              ${keyword.label}
+            </label>
+          </li>`;
+}
+
+function largeFormBlock() {
+  return createForm();
+}
+
+//Toggle between big and smol block
+function toggleBlock() {
+  event.preventDefault();
+  if (event.target.value === "small") {
+    //console.log('smol')
+    event.target.value = "big";
+    document.querySelector('#togglable').innerHTML= largeSearchBlock();
+  } else {
+    event.target.value = "small";
+    //console.log('big');
+    document.querySelector('#togglable').innerHTML= '';
+  }
+}
+
+//TODO: check out a way to generalize this function <<
+function toggleBlock2() {
+  event.preventDefault();
+  if (event.target.value === "small") {
+    //console.log('smol')
+    event.target.value = "big";
+    document.querySelector('#formContainer').innerHTML= largeFormBlock();
+  } else {
+    event.target.value = "small";
+    //console.log('big');
+    document.querySelector('#formContainer').innerHTML= '';
+  }
+}
+
 // Create a place list from all the data
 function placeList() {
   return "<div class='placelist'>" + places.map(p => placeData(p)).join(' ') + "</div>";
@@ -106,7 +174,7 @@ function filterButton() {
   return button;
 }
 
-function searcbar() {
+function searchbar() {
   return `<input id="search" class="searchbar" oninput="searchPlaces();" value="${search}" placeholder="Search places"></input>`
 }
 
@@ -140,7 +208,7 @@ function getKeywords(place) {
   let keywords = ``;
   // If place has keywords, display them:
   
-    // Create html structure for keywords:
+  // Create html structure for keywords:
   if (place.keywords && place.keywords.length > 0) {
     place.keywords.map(e => keywords = keywords.concat(`\n  <div class="keyword">${e.label}</div>`));
   }
@@ -224,12 +292,6 @@ function editKeyword(id) {
 // Remove a keyword from a place:
 function editKeyword(id) {
   event.preventDefault();
-  //console.log(id)
-
-  // Do data by hand:
-
-
-
   const data = getFormData("form");
   fetch(`${base_url}/places/${id}`,
     {
@@ -279,7 +341,7 @@ function setFilter() {
 function addEditPlaceForm() {
   event.preventDefault();
   let place = places.find(e => e.id === parseInt(event.target.value, 10)); 
-  document.querySelector('.form').innerHTML = editForm(place);
+  document.querySelector('#formContainer').innerHTML = editForm(place);
 }
 
 // Show only open places on map:
@@ -371,13 +433,19 @@ function update() {
       markers.push(marker);
     })
 
-  document.querySelector('#menu').innerHTML = placeList();
-  document.querySelector('#filter').innerHTML= filterButton();
-  // Empty form:
-  document.querySelector('.form').innerHTML = createForm();
+  // Don't refresh searchblock if search/filter is on:
   if (filter.length < 1) { 
-    document.querySelector('#searchbar').innerHTML = searcbar();
+    document.querySelector('#filter').innerHTML = searchBlock();
   }
+
+  //document.querySelector('#filter').innerHTML= searchBlock();
+  document.querySelector('.form').innerHTML = formBlock();
+
+  
+  //document.querySelector('#searchbar')
+  document.querySelector('#menu').innerHTML = placeList();
+  //document.querySelector('.form').innerHTML = createForm();
+
   })
 };
 
@@ -396,45 +464,38 @@ function initMap() {
 
   update();
 
-  // Clicking on map changes the coordinates on map every time
+  // Clicking on map changes the coordinates on form:
   map.addListener('click', function(e) {
-    let lat = document.querySelector('#latitude');
-    lat.value=e.latLng.lat();
-    let lng = document.querySelector('#longitude');
-    lng.value=e.latLng.lng();
-    // console.log(e.latLng.lat());
-    // console.log(e.latLng.lng())
+    // Add coordinates only if the form is open:
+    if (document.querySelector('#formContainer').innerHTML.length>0) {
+      let lat = document.querySelector('#latitude');
+      lat.value=e.latLng.lat();
+      let lng = document.querySelector('#longitude');
+      lng.value=e.latLng.lng();
+    }
   });
-
-    // var infowindow = new google.maps.InfoWindow({
-    //   content: `${e.latLng.lat()}, ${e.latLng.lat()}`
-    //  });
-
-    // placeMarkerAndPanTo(e.latLng, map);
-    // Add markers to createForm
 }
 
-// TODO: List behavior doesn't work properly with the remove due to indexing or something bug <<
-// First item on the list cannot be removed?
+// Remove a place from map:
 function removePlace() {
   // Find item by id/coords/some kind of identifying attribute:
   let removeId = parseInt(event.target.value, 10);
 
-  // Remove item from current markers: 
-  let i = markers[0];
+  // // Remove item from current markers: 
+  // let i = markers[0];
   
-  //console.log(markers)
-  let marker = markers.find(e => e.place_id === removeId);
+  // //console.log(markers)
+  // let marker = markers.find(e => e.place_id === removeId);
 
-  //let marker = markers.map(e => e.id === removeId);
-  console.log(marker)
-  // Remove marker from map:
-  marker.setMap(null);
-  console.log(marker.map)
+  // //let marker = markers.map(e => e.id === removeId);
+  // console.log(marker)
+  // // Remove marker from map:
+  // marker.setMap(null);
+  // console.log(marker.map)
 
-  // Remove marker from markers: <<
-  markers = markers.filter(e => e.place_id !== removeId);
-  console.log(markers.length)
+  // // Remove marker from markers: <<
+  // markers = markers.filter(e => e.place_id !== removeId);
+  // console.log(markers.length)
 
   // Send DELETE request to the server:
   deletePlaceFromServer(removeId).then(() => {
@@ -530,19 +591,6 @@ function deletePlaceFromServer(id) {
     console.log("Place deleted")
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // // Check/rewrite this function << 
 // function placeDataShort(place) {
