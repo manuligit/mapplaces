@@ -474,7 +474,14 @@ function update() {
     if (keywordfilter.length > 0) {
 
       console.log('keywordfilter', keywordfilter)
-      //Filter by places of keywords on the list           
+      //Filter by places of keywords on the list 
+      
+      
+
+
+
+
+
       // keywordfilter.forEach(e => {
       //   kw = keywords.filter(k => k.id === e);
       //   places = kw.places;
@@ -709,3 +716,9 @@ function deletePlaceFromServer(id) {
 
 
  // <form action="http://localhost:8000/api/places/" method="POST">
+
+function hello() {
+  console.log('hello')
+}
+
+ export { hello };

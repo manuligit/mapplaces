@@ -13,3 +13,6 @@
 //   opentime: "1300",
 //   closetime: "1915",
 // }
+import * as map from './map.js';
+
+map.hello();
