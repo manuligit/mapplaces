@@ -32,6 +32,14 @@ function placeDataShort(place) {
           </div>`
 }
 
+function keywordForm(id) {
+  return `<form id="keywordForm" onsubmit="addKeywordToServer();">
+            <input id="label" type="text" name="label" required />
+            <input id="places" type="hidden" value=${[id]} name="places" required />
+            <input type="submit" value="+"/>
+          </form>`
+}
+
 function getKeywords(place) {
   let labels = `<div class="labels">`;
   let keywords = ``;
@@ -50,13 +58,6 @@ function getKeywords(place) {
   return labels;
 }
 
-function keywordForm(id) {
-  return `<form id="keywordForm" onsubmit="addKeywordToServer();">
-            <input id="label" type="text" name="label" required />
-            <input id="places" type="hidden" value=${[id]} name="places" required />
-            <input type="submit" value="+"/>
-          </form>`
-}
 
 // Add a form for adding/editing keywords
 function addKeyword() {

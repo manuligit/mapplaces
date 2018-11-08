@@ -2,11 +2,7 @@
 //  *  V I E W S                                *
 //  * * * * * * * * * * * * * * * * * * * * * * * 
 
-//  * * * * * * * * * * * * * * * * * * * * * * * 
-//  *  V I E W S                                *
-//  * * * * * * * * * * * * * * * * * * * * * * * 
-
-
+// Form for adding a new place
 function createForm() {
   return `<div>
             <form class="createForm" onsubmit="addPlace();">
@@ -43,9 +39,8 @@ function createForm() {
           </div>`
 }
 
+// Form for editing an existing place
 function editForm(place) {
-  console.log(place)
-  console.log(place.title)
   return `<div>
             <form class="editForm" onsubmit="editPlace(${place.id});">
               <div>
@@ -94,16 +89,14 @@ function formBlock() {
           </div>`
 }
 
-//TODO: check out a way to generalize this function <<
+// Toggle between the small and large form block:
 function toggleBlock2() {
   event.preventDefault();
   if (event.target.value === "small") {
-    //console.log('smol')
     event.target.value = "big";
     document.querySelector('#formContainer').innerHTML= largeFormBlock();
   } else {
     event.target.value = "small";
-    //console.log('big');
     document.querySelector('#formContainer').innerHTML= '';
   }
 }

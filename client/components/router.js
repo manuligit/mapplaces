@@ -1,33 +1,28 @@
+const base_url = "http://localhost:8000/api";
 
 // Get the places data from backend <<
-function getData() {
+function getData () {
   console.log('getdata')
-  return fetch('http://localhost:8000/api/places/', { mode: "cors" })
-    .then(function(response) {
-      return response.json();
-      
+  return fetch(`${base_url}/places/`, { mode: 'cors' })
+    .then(function (response) {
+      return response.json()
     }).then((responseJson) => {
-      // <<
-      db_places = responseJson;
-      places = db_places;
+      // console.log(responseJson)
+      return responseJson
+    })
+}
 
-      // Also fetch keyword data: <<
-      getKeywordData().then((data) => {
-        keywords = data;
-        //console.log(keywords);
-        return responseJson;
-      });
-    });
-  }
-
-  function getKeywordData() {
-    return fetch('http://localhost:8000/api/keywords/', { mode: "cors" })
-    .then(function(response) {
-      return response.json();
+function getKeywordData () {
+  return fetch(`${base_url}/keywords/`, { mode: 'cors' })
+    .then(function (response) {
+      return response.json()
     }).then((responseJson) => {
-      return responseJson;
-    });
-  }
+      // console.log(responseJson)
+      return responseJson
+    })
+}
+
+// Functions for place:
 
 function addPlace() {
   event.preventDefault();
@@ -42,7 +37,6 @@ function addPlace() {
       console.log("request sent: " + value);
       update();
     });
-    // if fails, add debugger
 }
 
 function editPlace(id) {
@@ -61,7 +55,6 @@ function editPlace(id) {
     });
 }
 
-// Delete a place from the server:
 function deletePlaceFromServer(id) {
   return fetch(`${base_url}/places/${id}`, { method: "DELETE", mode: "cors" })
   .then(
@@ -69,30 +62,23 @@ function deletePlaceFromServer(id) {
   );
 }
 
-
+// Functions for keywords:
 
 // Send new keyword with place data to server:
 function addKeywordToServer() {
   event.preventDefault();
   const data = getFormData("#keywordForm");
-  //console.log(data);
   
   // Check if the new label already exists:
   let items = Array.from(data.entries());
   let label = items[0][1];
   let labels = keywords.map(e => e.label.toLowerCase());
 
+  // If label exists, do a put request instead of adding new:
   if (labels.includes(label.toLowerCase())) {
-    console.log('match')
-    //addPlaceToKeyword()
     let keyword = keywords.find(e => e.label.toLowerCase() === label.toLowerCase());
-    //console.log(keyword)
-    //console.log(items[1][1])
-    // Do put request instead of adding new:
-    console.log(keyword.id, items[1])
     addPlaceToKeyword(keyword.id, parseInt(items[1][1],10));
   } else {
-
   fetch(`${base_url}/keywords/`,
     {
         body: data,
@@ -101,21 +87,16 @@ function addKeywordToServer() {
       console.log("request sent: " + value);
       update();
     });
-    //if fails, add debugger
+    //onerror debugger
   }
 }
 
-function editLabel() {
-  // Get data... 
-}
-
+// Toggle place on an already existing keyword:
 function addPlaceToKeyword(keyword_id, place_id) {
-  console.log(keyword_id, place_id)
   let keyword = keywords.find(e => e.id === keyword_id);
-  console.log(keyword)
   // Check that label exists just in case
   if (keyword) {
-    console.log('found keyword with label ', keyword.label);
+    //console.log('found keyword with label ', keyword.label);
     let places = keyword.places.map(e => e.id);
     
     // If place is already included, remove it:
@@ -127,28 +108,11 @@ function addPlaceToKeyword(keyword_id, place_id) {
 
     // Create the data for request: 
     let data = JSON.stringify({ "label": keyword.label, "places": places });
-    console.log(data);
+    //console.log(data);
 
     editKeyword(keyword_id, data);
   }
 }
-
-
-// function editKeyword(id) {
-//   event.preventDefault();
-//   console.log(id)
-
-//   const data = getFormData("form");
-//   fetch(`${base_url}/places/${id}`,
-//     {
-//         body: data,
-//         method: "put",
-//         mode: 'cors'
-//     }).then((value) => {
-//       console.log("request sent: " + value);
-//       update();
-//     });
-// }
 
 // Remove a keyword from a place:
 function editKeyword(id, data) {
@@ -157,7 +121,7 @@ function editKeyword(id, data) {
   fetch(`${base_url}/keywords/${id}`,
     {
         body: data,
-        headers:{'content-type': 'application/json'},
+        headers: {'content-type': 'application/json'},
         method: "put",
         mode: 'cors'
     }).then((value) => {

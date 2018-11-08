@@ -1,9 +1,9 @@
-
 //  * * * * * * * * * * * * * * * * * * * * * * *
-//  *  V I E W S . j s                          *
+//  *  V I E W S .                              *
 //  * * * * * * * * * * * * * * * * * * * * * * *
+let filter = '';
 
-
+// Create a togglable block for search/filter elements:
 function searchBlock() {
   return `<div class="searchBlock block">
             <button id="searchBlock" class="menu" value="small" onclick="toggleBlock();">+</button>
@@ -17,6 +17,7 @@ function largeSearchBlock () {
   return `<div>` + searchbar() + `<br />` + filterButton() + keywordList() + `</div>`
 }
 
+// List all keywords for search
 function keywordList () {
   return `<ul class='keywordlist'>` +
             keywords.map(p => keywordData(p)).join(' ') +
@@ -32,6 +33,7 @@ function keywordData (keyword) {
           </li>`
 }
 
+// Button for toggling showing of all/open places:
 function filterButton () {
   console.log('filterbutton', filter)
   let button
@@ -53,7 +55,7 @@ function searchbar () {
 
 // Add keywords to filter with keyword id
 function filterWithKeywords () {
-  let id = event.target.value
+  let id = parseInt(event.target.value, 10);
   // If keyword is already on list, remove
   if (keywordfilter.includes(id)) {
     console.log('contains ', id)
@@ -91,48 +93,48 @@ function searchPlaces () {
   update()
 }
 
+// Returns every member of subset which is also present in superset
+function checkCommon(subset, superset) {
+  return subset.filter(function (value) {
+    return (superset.indexOf(value) >= 0)
+  })
+}
 
 function filterPlaces(places) {
   if (filter && filter.length > 0) {
     if (filter === 'open') {
       console.log('filter set')
-      places = filterOpen()
+      places = filterOpen(places)
       document.querySelector('#filterButton').innerHTML = `<button id="filter" value="" onclick="setFilter();"> Show all places</div>`
     } else {
-      places = filterSearch()
+      places = places.filter(e => e.title.toLowerCase().includes(filter.toLowerCase()));
     }
-  // places = places.filter()
   }
 
-
-  // Filter with keywords: <<<<<<<
+  // Filter with a list of checked keywords
   // Check that place's list of keywords includes every keyword in keywordfilter
   if (keywordfilter.length > 0) {
-    console.log('keywordfilter', keywordfilter)
     // Filter by places of keywords on the list
+    let kws = keywords.filter(kw => keywordfilter.includes(kw.id));
+    // Find ids of all the places related to keywords:
+    let pids= kws.map(kw => kw.places.map(e => e.id));
+    //console.log("p", pids)
 
-    // keywordfilter.forEach(e => {
-    //   kw = keywords.filter(k => k.id === e);
-    //   places = kw.places;
-    //   //kw = keywords[]
-    //   //array1.filter(value => -1 !== array2.indexOf(value));
-    // });
-
-  // places = places.filter(p => keywordfilter.every(function (value) {
-  //   console.log(p.keywords)
-  //   console.log((p.keywords.indexOf(value) >= 0))
-  //   return (p.keywords.indexOf(value) >= 0)
-  // }));
+    // Get all the common variables with a reducer:
+    common = pids.reduce((e,a) => checkCommon(e, a), pids[0])
+    //console.log('common', common)
+    
+    // Find places associated with the ids:
+    places = places.filter(e => common.includes(e.id));
+    //console.log('places', places)
   }
 
   return places;
 }
 
-
 // Show only open places on map:
-function filterOpen () {
+function filterOpen (places) {
   console.log('filteropen')
-  // Quick and dirty time check:
   var time = new Date()
   var opens = new Date()
   var closes = new Date()
@@ -140,8 +142,8 @@ function filterOpen () {
   closes.setSeconds(0)
 
   var open_places = []
-  db_places.forEach(e => {
-    // If the hours are not properly formatted, this will not work <<
+  places.forEach(e => {
+    // Assuming properly formatted timestamps
     opens.setHours(e.opens_at.slice(0, 2))
     opens.setMinutes(e.opens_at.slice(3))
 
@@ -150,99 +152,15 @@ function filterOpen () {
 
     if (opens.getTime() <= time.getTime() && time.getTime() <= closes.getTime()) {
       open_places.push(e)
-    } else {
-      // console.log('NOT OPEN:')
-      // console.log(opens.getHours(), opens.getMinutes())
-      // console.log(closes.getHours(), closes.getMinutes())
     }
   })
-
   return open_places
 }
 
 // Set filter to wanted value:
 function setFilter () {
   event.preventDefault()
-  // Set the filter
   filter = event.target.value
-  console.log('filter')
   // Update view
-  update()
+  //update()
 }
-
-// Filter places according to the filter:
-function filterSearch () {
-  // console.log("filterseatch")
-  var matches = []
-
-  if (filter.length > 0) {
-    matches = db_places.filter(e => e.title.toLowerCase().includes(filter.toLowerCase()))
-  }
-  return matches
-}
-
-function arrayContainsArray (superset, subset) {
-  return subset.every(function (value) {
-    return (superset.indexOf(value) >= 0)
-  })
-}
-
-
-
-// // Set filter to wanted value:
-// function setFilter() {
-//   event.preventDefault();
-//   // Set the filter
-//   filter = event.target.value;
-//   console.log("filter")
-//   // Update view
-//   update();
-// }
-
-// // Show only open places on map:
-// function filterOpen() {
-//   console.log('filteropen')
-//   // Quick and dirty time check:
-//   var time =  new Date();
-//   var opens = new Date();
-//   var closes = new Date();
-//   opens.setSeconds(0);
-//   closes.setSeconds(0);
-
-//   var open_places = [];
-//   db_places.forEach(e => {
-//     // If the hours are not properly formatted, this will not work <<
-//     opens.setHours(e.opens_at.slice(0,2));
-//     opens.setMinutes(e.opens_at.slice(3));
-
-//     closes.setHours(e.closes_at.slice(0,2));
-//     closes.setMinutes(e.closes_at.slice(3));
-
-//     if (opens.getTime() <= time.getTime() && time.getTime() <= closes.getTime()) {
-//       open_places.push(e)
-//     } else {
-//       // console.log('NOT OPEN:')
-//       // console.log(opens.getHours(), opens.getMinutes())
-//       // console.log(closes.getHours(), closes.getMinutes())
-//     }
-//   });
-
-//   return open_places;
-// }
-
-// // Filter places according to the filter:
-// function filterSearch() {
-//   //console.log("filterseatch")
-//   var matches = [];
-
-//   if (filter.length > 0) {
-//     matches = db_places.filter(e => e.title.toLowerCase().includes(filter.toLowerCase()));
-//   }
-//   return matches; 
-// }
-
-// function arrayContainsArray (superset, subset) {
-//   return subset.every(function (value) {
-//     return (superset.indexOf(value) >= 0);
-//   });
-// }
