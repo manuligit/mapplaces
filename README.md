@@ -33,7 +33,7 @@ The PHP backend server can be run with the following command in the `/server/` f
     php -S localhost:8000 -t public
 ```
 
-If the API is run on another port, the `base_url` variable in `client/components/router.js` needs to be changed.
+If the API is run on another port, the `base_url` variable in `client/components/router.js` needs to be changed. It can be accessed at: [Places](http://localhost:8000/api/places) and [Keywords](http://localhost:8000/api/keywords).
 
 ### Client
 
