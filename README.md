@@ -5,6 +5,7 @@
 * MySQL
 * php version 7.0 up
 * node
+* Tested primarily with Chrome
 
 ## Instructions
 
@@ -28,6 +29,21 @@ A password needs to be inserted in the prompt. The default value is root for bot
 ### Server
 
 The PHP backend server can be run with the following command in the `/server/` folder:
+
+```
+    composer install
+```
+After this, rename the `.env.example` file to `.env` and edit the following lines: 
+
+```
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=places
+    DB_USERNAME=root
+    DB_PASSWORD=root
+```
+Username and password should be samed as before. Now the server can be started with:
 
 ```
     php -S localhost:8000 -t public
