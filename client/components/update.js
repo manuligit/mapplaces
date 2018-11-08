@@ -1,10 +1,10 @@
-var map;
-var markers = [];
-var places;
+let map;
+let markers = [];
+let places;
 let db_places;
-var search = "";
-var keywords = [];
-var keywordfilter = [];
+let search = "";
+let keywords = [];
+let keywordfilter = [];
 
 // Update the view
 function update() {
@@ -45,7 +45,7 @@ function update() {
 // Get form data as URLSearchParams to send with fetch request by searching an element from the DOM
 // TODO: Find a better place for this function
 function getFormData(tag) {
-  var formElement = document.querySelector(tag);
+  let formElement = document.querySelector(tag);
   const data = new URLSearchParams();
   for (const pair of new FormData(formElement)) {
     data.append(pair[0], pair[1]);

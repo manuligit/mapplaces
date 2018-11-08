@@ -22,7 +22,7 @@ function initMap() {
 // Create markers for every place:
 function createMarkers (places) {
   places.forEach(place => {
-    var marker = new google.maps.Marker({
+    let marker = new google.maps.Marker({
       position: { lat: place.latitude, lng: place.longitude },
       map: map,
       title: place.title,
@@ -30,9 +30,9 @@ function createMarkers (places) {
     })
 
     // Create infowindow for the marker
-    var contentString = placeDataShort(place)
+    let contentString = placeDataShort(place)
 
-    var infowindow = new google.maps.InfoWindow({
+    let infowindow = new google.maps.InfoWindow({
       content: contentString
     })
 
