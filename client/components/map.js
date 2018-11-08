@@ -8,14 +8,13 @@ function loadMap () {
   x.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyB0T67t5UkvJ27eNMBvre_kESNYwzFZ8GI&callback=initMap'
   x.async = true
   x.defer = true
-  window.initMap = initMap
   document.body.appendChild(x)
+  document.addEventListener('mapReady', createMap)
 }
 
 // Initialize the map:
-function initMap () {
+function createMap () {
   // Check if the map initialization can be done according to the markers: <<
-
   google = window.google
 
   map = new google.maps.Map(document.getElementById('map'), {
@@ -71,6 +70,11 @@ function placeMarkerAndPanTo (latLng, map) {
   map.panTo(latLng)
 }
 
-// window.initMap = initMap;
+// Remove all markers from map
+function removeMarkers() {
+  if (markers && markers.length > 0) {
+    markers.map(m => m.setMap(null))
+  }
+}
 
-export default { loadMap, map, createMarkers }
+export default { loadMap, createMarkers, removeMarkers }

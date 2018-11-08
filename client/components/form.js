@@ -75,12 +75,15 @@ function editForm (place) {
 }
 
 function formBlock () {
-  console.log('formblock')
-  return `<div class="formBlock block">
-            <button id="formBlock" class="menu" value="small" onclick="toggleBlock2();">+</button>
-            <h3>Add or edit a place</h3>
-            <div id="formContainer"></div>
-          </div>`
+  let block = document.createElement('div');
+  let string = `<div class="formBlock block">
+                  <button id="formBlock" class="menu" value="small">+</button>
+                  <h3>Add or edit a place</h3>
+                  <div id="formContainer"></div>
+                </div>`
+  block.innerHTML = string;
+  block.querySelector('button').addEventListener('click', toggleBlock)
+  return block;
 }
 
 function largeFormBlock () {
@@ -88,7 +91,7 @@ function largeFormBlock () {
 }
 
 // TODO: check out a way to generalize this function <<
-function toggleBlock2 () {
+function toggleBlock () {
   event.preventDefault()
   if (event.target.value === 'small') {
     // console.log('smol')
@@ -112,4 +115,4 @@ function addEditPlaceForm () {
   document.querySelector('#formContainer').innerHTML = editForm(place)
 }
 
-export default { createForm, editForm, formBlock, largeFormBlock, toggleBlock2 }
+export default { formBlock  }

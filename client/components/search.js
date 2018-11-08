@@ -1,15 +1,27 @@
+let keywordfilter = []
+let filter = ''
+let search = ''
+// Check out better way to do keywords:
+let keywords = [];
+
 //  * * * * * * * * * * * * * * * * * * * * * * *
 //  *  V I E W S . j s                          *
 //  * * * * * * * * * * * * * * * * * * * * * * *
 
-function searchBlock () {
-  console.log('searchblock')
-  return `<div class="searchBlock block">
-            <button id="searchBlock" class="menu" value="small" onclick="toggleBlock();">+</button>
-            <h3>Search or filter places</h3>
-            <div id="togglable"></div>
-          </div>`
+function searchBlock (kw) {
+  keywords = kw;
+  // Conditional filtering <<
+  let block = document.createElement('div');
+  let string =`<div class="searchBlock block">
+                <button id="searchBlock" class="menu" value="small">+</button>
+                <h3>Search or filter places</h3>
+                <div id="togglable"></div>
+              </div>`
+  block.innerHTML = string;
+  block.querySelector('button').addEventListener('click', toggleBlock)
+  return block;
 }
+
 // Add keyword filter block here <<
 function largeSearchBlock () {
   return `<div>` + searchbar() + `<br />` + filterButton() + keywordList() + `</div>`
@@ -91,7 +103,39 @@ function searchPlaces () {
 
 
 function filterPlaces(places) {
-  
+  if (filter && filter.length > 0) {
+    if (filter === 'open') {
+      console.log('filter set')
+      places = filterOpen()
+      document.querySelector('#filterButton').innerHTML = `<button id="filter" value="" onclick="setFilter();"> Show all places</div>`
+    } else {
+      places = filterSearch()
+    }
+  // places = places.filter()
+  }
+
+
+  // Filter with keywords: <<<<<<<
+  // Check that place's list of keywords includes every keyword in keywordfilter
+  if (keywordfilter.length > 0) {
+    console.log('keywordfilter', keywordfilter)
+    // Filter by places of keywords on the list
+
+    // keywordfilter.forEach(e => {
+    //   kw = keywords.filter(k => k.id === e);
+    //   places = kw.places;
+    //   //kw = keywords[]
+    //   //array1.filter(value => -1 !== array2.indexOf(value));
+    // });
+
+  // places = places.filter(p => keywordfilter.every(function (value) {
+  //   console.log(p.keywords)
+  //   console.log((p.keywords.indexOf(value) >= 0))
+  //   return (p.keywords.indexOf(value) >= 0)
+  // }));
+  }
+
+  return places;
 }
 
 
@@ -153,4 +197,4 @@ function arrayContainsArray (superset, subset) {
   })
 }
 
-export default { searchBlock, largeSearchBlock, keywordList, keywordData }
+export default { searchBlock, largeSearchBlock, keywordList, keywordData, filterPlaces }
