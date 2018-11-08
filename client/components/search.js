@@ -142,15 +142,19 @@ function filterOpen (places) {
 
   var open_places = []
   places.forEach(e => {
-    // Assuming properly formatted timestamps
-    opens.setHours(e.opens_at.slice(0, 2))
-    opens.setMinutes(e.opens_at.slice(3))
+    const opentime = e.opens_at.split(":");
+    const closetime = e.closes_at.split(":");
+    opens.setHours(opentime[0]);
+    opens.setMinutes(opentime[1]);
 
-    closes.setHours(e.closes_at.slice(0, 2))
-    closes.setMinutes(e.closes_at.slice(3))
+    closes.setHours(closetime[0])
+    closes.setMinutes(closetime[1])
 
     if (opens.getTime() <= time.getTime() && time.getTime() <= closes.getTime()) {
       open_places.push(e)
+    } else {
+      // console.log('closed: ', e.opens_at, e.closes_at)
+      // console.log(opens, closes)
     }
   })
   return open_places
