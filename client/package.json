@@ -4,20 +4,23 @@
   "description": "",
   "main": "map.js",
   "dependencies": {
+    "concurrently": "^4.0.1",
     "eslint": "^5.8.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-node": "^8.0.0",
-    "eslint-plugin-standard": "^4.0.0",
-    "eslint-plugin-promise": "^4.0.1"
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0"
   },
   "devDependencies": {
     "sass": "^1.14.3"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "sass styles/styles.scss css/styles.css --watch"
+    "server": "live-server",
+    "styles": "sass styles/styles.scss css/styles.css --watch",
+    "start": "concurrently \"npm run styles\" \"npm run server\""
   },
-  "author": "",
+  "author": "Riina Väisänen",
   "license": "ISC"
 }
