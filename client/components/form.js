@@ -91,6 +91,10 @@ function formBlock () {
           </div>`
 }
 
+//  * * * * * * * * * * * * * * * * * * * * * * *
+//  *  F U N C T I O N S                        *
+//  * * * * * * * * * * * * * * * * * * * * * * *
+
 // Toggle between the small and large form block:
 function toggleBlock2 () {
   event.preventDefault()
