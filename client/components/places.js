@@ -11,13 +11,16 @@ function placeData(place) {
   let keywords = getKeywords(place);
   //getKeywords(place);
   return `<div id="content">
-            <h2>${place.title}</h2>
-            <button type="button" value=${place.id} onclick="addEditPlaceForm();">Edit</button>
-            <button type="button" value=${place.id} onclick="removePlace();">Remove</button>
+            <div class="firstRow">
+              <h2>${place.title}</h2>
+              <div id="buttonsRow">
+                <button type="button" value=${place.id} onclick="addEditPlaceForm();">Edit</button>
+                <button type="button" value=${place.id} onclick="removePlace();">Remove</button>
+              </div>
+            </div>
             <p>${place.description}</p>
             <p>Opening hours: 
             <time>${place.opens_at}</time>-<time>${place.closes_at}</time> </p>
-            <p>${place.latitude}, ${place.longitude}</p>
             ${keywords}
           </div>`
 }
@@ -74,12 +77,4 @@ function removePlace() {
   deletePlaceFromServer(removeId).then(() => {
     update();
   })
-}
-
-
-// Change the add place-form to edit place-form: <<
-function addEditPlaceForm() {
-  event.preventDefault();
-  let place = places.find(e => e.id === parseInt(event.target.value, 10)); 
-  document.querySelector('#formContainer').innerHTML = editForm(place);
 }

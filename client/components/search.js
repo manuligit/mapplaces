@@ -6,8 +6,10 @@ let filter = '';
 // Create a togglable block for search/filter elements:
 function searchBlock() {
   return `<div class="searchBlock block">
-            <button id="searchBlock" class="menu" value="small" onclick="toggleBlock();">+</button>
-            <h3>Search or filter places</h3>
+            <div class="header">
+              <button id="searchBlock" class="menu" value="small" onclick="toggleBlock();">+</button>
+              <h3>Search or filter places</h3>
+            </div>
             <div id="togglable"></div>
           </div>`
 }
@@ -27,7 +29,7 @@ function keywordList () {
 function keywordData (keyword) {
   return `<li>
             <label>
-              <input type="checkbox" onclick="filterWithKeywords();" value=${keyword.id} />
+              <input type="checkbox" class="checkbox" onclick="filterWithKeywords();" value=${keyword.id} />
               ${keyword.label}
             </label>
           </li>`
@@ -35,12 +37,12 @@ function keywordData (keyword) {
 
 // Button for toggling showing of all/open places:
 function filterButton () {
-  console.log('filterbutton', filter)
-  let button
+  //console.log('filterbutton', filter)
+  let button;
   if (filter === 'open') {
-    button = `<button id="filterButton" value="" onclick="setFilter();"> Show all places</div>`
+    button = `<div id="filterButton"> <button class="filterButton" value="" onclick="setFilter();"> Show all places</div></div>`
   } else {
-    button = `<button id="filterButton" value="open" onclick="setFilter();"> Show open places</div>`
+    button = `<div id="filterButton"><button class="filterButton" value="open" onclick="setFilter();"> Show open places</div></div>`
   }
   return button
 }
@@ -58,27 +60,26 @@ function filterWithKeywords () {
   let id = parseInt(event.target.value, 10);
   // If keyword is already on list, remove
   if (keywordfilter.includes(id)) {
-    console.log('contains ', id)
+    //console.log('contains ', id)
     keywordfilter = keywordfilter.filter(e => e !== id)
   // Add keyword to filter list
   } else {
-    console.log('add ', id)
+    //console.log('add ', id)
     keywordfilter.push(id)
   }
   update()
 }
 
-// Toggle between big and smol block
+// Toggle between big and small block
 function toggleBlock () {
-  console.log('toggle')
   event.preventDefault()
   if (event.target.value === 'small') {
-    // console.log('smol')
     event.target.value = 'big'
+    event.target.innerText = "-";
     document.querySelector('#togglable').innerHTML = largeSearchBlock()
   } else {
     event.target.value = 'small'
-    // console.log('big');
+    event.target.innerText = "+";
     document.querySelector('#togglable').innerHTML = ''
   }
 }
@@ -87,7 +88,7 @@ function toggleBlock () {
 function searchPlaces () {
   event.preventDefault()
 
-  console.log(event.target.value)
+  //console.log(event.target.value)
   filter = event.target.value
   search = event.target.value
   update()
@@ -100,12 +101,11 @@ function checkCommon(subset, superset) {
   })
 }
 
+// Filter all places and return a list of filtered places:
 function filterPlaces(places) {
   if (filter && filter.length > 0) {
     if (filter === 'open') {
-      console.log('filter set')
       places = filterOpen(places)
-      document.querySelector('#filterButton').innerHTML = `<button id="filter" value="" onclick="setFilter();"> Show all places</div>`
     } else {
       places = places.filter(e => e.title.toLowerCase().includes(filter.toLowerCase()));
     }
@@ -134,7 +134,7 @@ function filterPlaces(places) {
 
 // Show only open places on map:
 function filterOpen (places) {
-  console.log('filteropen')
+  //console.log('filteropen')
   var time = new Date()
   var opens = new Date()
   var closes = new Date()
@@ -162,5 +162,5 @@ function setFilter () {
   event.preventDefault()
   filter = event.target.value
   // Update view
-  //update()
+  update()
 }

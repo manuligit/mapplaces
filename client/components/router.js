@@ -2,7 +2,6 @@ const base_url = "http://localhost:8000/api";
 
 // Get the places data from backend <<
 function getData () {
-  console.log('getdata')
   return fetch(`${base_url}/places/`, { mode: 'cors' })
     .then(function (response) {
       return response.json()
@@ -84,7 +83,7 @@ function addKeywordToServer() {
         body: data,
         method: "post"
     }).then((value) => {
-      console.log("request sent: " + value);
+      //console.log("request sent: " + value);
       update();
     });
     //onerror debugger

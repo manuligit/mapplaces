@@ -31,7 +31,7 @@ function update() {
         document.querySelector('#filter').innerHTML = searchBlock();
         // Only change the button, if filter is set to open: << 
       } else if (filter === "open") {
-        document.querySelector('#filterButton').innerHTML = `<button id="filter" value="" onclick="setFilter();"> Show all places</div>`
+        document.querySelector('#filterButton').innerHTML = `<button class="filterButton" value="" onclick="setFilter();"> Show all places</div>`
       }
       document.querySelector('.form').innerHTML = formBlock();
       document.querySelector('#menu').innerHTML = placeList();
