@@ -2,6 +2,8 @@
 //  *  V I E W S .                              *
 //  * * * * * * * * * * * * * * * * * * * * * * *
 let filter = '';
+// A variable to stop search window closing every time values are emptied:
+let searchOpen = false;
 
 // Create a togglable block for search/filter elements:
 function searchBlock() {
@@ -72,13 +74,17 @@ function filterWithKeywords () {
 
 // Toggle between big and small block
 function toggleBlock () {
-  console.log(search)
+//   console.log(search)
+//   console.log(searchOpen)
   event.preventDefault()
   if (event.target.value === 'small') {
     event.target.value = 'big'
     event.target.innerText = "-";
     document.querySelector('#togglable').innerHTML = largeSearchBlock()
+    searchOpen = true;
   } else {
+    searchOpen = false;
+    search = '';
     event.target.value = 'small'
     event.target.innerText = "+";
     document.querySelector('#togglable').innerHTML = ''
@@ -134,13 +140,13 @@ function filterPlaces(places) {
 // Show only open places on map:
 function filterOpen (places) {
   //console.log('filteropen')
-  var time = new Date()
-  var opens = new Date()
-  var closes = new Date()
+  let time = new Date()
+  let opens = new Date()
+  let closes = new Date()
   opens.setSeconds(0)
   closes.setSeconds(0)
 
-  var open_places = []
+  let open_places = []
   places.forEach(e => {
     const opentime = e.opens_at.split(":");
     const closetime = e.closes_at.split(":");

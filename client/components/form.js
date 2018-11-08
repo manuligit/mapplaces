@@ -32,8 +32,8 @@ function createForm() {
                   Opening hours
                 </label>
                 <br />
-                <input id="opens_at" type="time" name="opens_at" placeholder="Opening time" value="00:00" required />-
-                <input id="closes_at" type="time" name="closes_at" placeholder="Closing time"  value="18:00" required />
+                <input id="opens_at" type="time" name="opens_at" placeholder="Opening time" value="08:00" required />-
+                <input id="closes_at" type="time" name="closes_at" placeholder="Closing time"  value="16:00" required />
               </div>
               <input type="submit" value="Add Place"/>
             </form>

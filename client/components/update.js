@@ -27,7 +27,8 @@ function update() {
     
       // Create HTML content for the page
       // Don't refresh searchblock if search/filter is on:
-      if (filter.length < 1 && keywordfilter.length < 1) { 
+      console.log(searchOpen)
+      if (!searchOpen) { 
         document.querySelector('#filter').innerHTML = searchBlock();
         // Only change the button, if filter is set to open: << 
       } else if (filter === "open") {
