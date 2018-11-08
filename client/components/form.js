@@ -1,9 +1,9 @@
-//  * * * * * * * * * * * * * * * * * * * * * * * 
+//  * * * * * * * * * * * * * * * * * * * * * * *
 //  *  V I E W S                                *
-//  * * * * * * * * * * * * * * * * * * * * * * * 
+//  * * * * * * * * * * * * * * * * * * * * * * *
 
 // Form for adding a new place
-function createForm() {
+function createForm () {
   return `<div>
             <form class="createForm" onsubmit="addPlace();">
               <div>
@@ -41,7 +41,7 @@ function createForm() {
 }
 
 // Form for editing an existing place
-function editForm(place) {
+function editForm (place) {
   return `<div>
             <form class="editForm" onsubmit="editPlace(${place.id});">
               <div>
@@ -77,12 +77,11 @@ function editForm(place) {
           </div>`
 }
 
-
-function largeFormBlock() {
-  return createForm();
+function largeFormBlock () {
+  return createForm()
 }
 
-function formBlock() {
+function formBlock () {
   return `<div class="formBlock block">
             <div class="header">
               <button id="formBlock" class="menu" value="small" onclick="toggleBlock2();">+</button>
@@ -93,25 +92,25 @@ function formBlock() {
 }
 
 // Toggle between the small and large form block:
-function toggleBlock2() {
-  event.preventDefault();
-  if (event.target.value === "small") {
-    event.target.value = "big";
-    event.target.innerText = "-";
-    document.querySelector('#formContainer').innerHTML= largeFormBlock();
+function toggleBlock2 () {
+  event.preventDefault()
+  if (event.target.value === 'small') {
+    event.target.value = 'big'
+    event.target.innerText = '-'
+    document.querySelector('#formContainer').innerHTML = largeFormBlock()
   } else {
-    event.target.value = "small";
-    event.target.innerText = "+";
-    document.querySelector('#formContainer').innerHTML= '';
+    event.target.value = 'small'
+    event.target.innerText = '+'
+    document.querySelector('#formContainer').innerHTML = ''
   }
 }
 
 // Change the add place-form to edit place-form when editing a place:
-function addEditPlaceForm() {
-  event.preventDefault();
-  let place = places.find(e => e.id === parseInt(event.target.value, 10));
-  let button = document.querySelector('#formBlock');
-  button.value = "big";
-  button.innerText = "-";
-  document.querySelector('#formContainer').innerHTML = editForm(place);
+function addEditPlaceForm () {
+  event.preventDefault()
+  let place = places.find(e => e.id === parseInt(event.target.value, 10))
+  let button = document.querySelector('#formBlock')
+  button.value = 'big'
+  button.innerText = '-'
+  document.querySelector('#formContainer').innerHTML = editForm(place)
 }

@@ -1,15 +1,15 @@
-//  * * * * * * * * * * * * * * * * * * * * * * * 
+//  * * * * * * * * * * * * * * * * * * * * * * *
 //  *  V I E W S                                *
-//  * * * * * * * * * * * * * * * * * * * * * * * 
+//  * * * * * * * * * * * * * * * * * * * * * * *
 
 // Create a place list from all the data
-function placeList() {
-  return "<div class='placelist'>" + places.map(p => placeData(p)).join(' ') + "</div>";
+function placeList () {
+  return "<div class='placelist'>" + places.map(p => placeData(p)).join(' ') + '</div>'
 }
 
-function placeData(place) {
-  let keywords = getKeywords(place);
-  //getKeywords(place);
+function placeData (place) {
+  let keywords = getKeywords(place)
+  // getKeywords(place);
   return `<div class="place-content">
             <div class="firstRow">
               <h2>${place.title}</h2>
@@ -25,7 +25,7 @@ function placeData(place) {
           </div>`
 }
 
-function placeDataShort(place) {
+function placeDataShort (place) {
   return `<div id="short_content">
             <h2>${place.title}</h2>
             <p>${place.description}</p>
@@ -36,10 +36,10 @@ function placeDataShort(place) {
 }
 
 // Create the form to add new keyword and ability to close the form:
-function keywordForm(id) {
-  let button = document.querySelector(`#addKeyword${id}`);
-  button.innerText="-";
-  button.onclick = resetForm;
+function keywordForm (id) {
+  let button = document.querySelector(`#addKeyword${id}`)
+  button.innerText = '-'
+  button.onclick = resetForm
 
   return `<form id="keywordForm" onsubmit="addKeywordToServer();">
             <input id="label" type="text" name="label" required />
@@ -49,48 +49,46 @@ function keywordForm(id) {
 }
 
 // Create elements of all the keywords for one place and display add-button
-function getKeywords(place) {
-  let labels = `<div class="labels">`;
-  let keywords = ``;
+function getKeywords (place) {
+  let labels = `<div class="labels">`
+  let keywords = ``
   // If place has keywords, display them:
-  
+
   // Create html structure for keywords:
   if (place.keywords && place.keywords.length > 0) {
-    place.keywords.map(e => keywords = keywords.concat(`\n  <div class="keyword">${e.label}</div>`));
+    place.keywords.map(e => { keywords = keywords.concat(`\n  <div class="keyword">${e.label}</div>`) })
   }
   // Display the "add keywords button:"
-  let button = `<button type="button" id="addKeyword${place.id}" class="addKeyword" value=${place.id} onclick="addKeyword();">+</button><div class="keywordSearch"></div>`;
+  let button = `<button type="button" id="addKeyword${place.id}" class="addKeyword" value=${place.id} onclick="addKeyword();">+</button><div class="keywordSearch"></div>`
 
-  keywords = keywords.concat(`\n ${button}`);
+  keywords = keywords.concat(`\n ${button}`)
   keywords = keywords.concat(`\n<div class="keywordsearch${place.id}"></div>`)
   labels = labels.concat(`${keywords} \n </div>`)
-  return labels;
+  return labels
 }
 
-
 // Add a form for adding/editing keywords
-function addKeyword() {
-  event.preventDefault();
-  let id = event.target.value;
-  document.querySelector(`.keywordsearch${id}`).innerHTML = keywordForm(id);
+function addKeyword () {
+  event.preventDefault()
+  let id = event.target.value
+  document.querySelector(`.keywordsearch${id}`).innerHTML = keywordForm(id)
 }
 
 // Delete the keyword adding form from view:
-function resetForm() {
-  event.preventDefault();
-  let button = event.target;
-  let id = event.target.value;
-  //console.log(id)
-  document.querySelector(`.keywordsearch${id}`).innerHTML = '';
-  button.innerText="+";
-  button.onclick = addKeyword;
+function resetForm () {
+  event.preventDefault()
+  let button = event.target
+  let id = event.target.value
+  document.querySelector(`.keywordsearch${id}`).innerHTML = ''
+  button.innerText = '+'
+  button.onclick = addKeyword
 }
 
 // Remove a place from map:
-function removePlace() {
+function removePlace () {
   // Find item by id:
-  let removeId = parseInt(event.target.value, 10);
+  let removeId = parseInt(event.target.value, 10)
   deletePlaceFromServer(removeId).then(() => {
-    update();
+    update()
   })
 }

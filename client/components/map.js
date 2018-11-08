@@ -1,22 +1,22 @@
 // Initialize the map:
-function initMap() {
-  //TODO: Check if the map initialization can be done according to the places/markers
+function initMap () {
+  // TODO: Check if the map initialization can be done according to the places/markers
   map = new google.maps.Map(document.getElementById('map'), {
-    center: {lat: 60.147497, lng: 24.988798},
+    center: { lat: 60.147497, lng: 24.988798 },
     zoom: 16
-  });
+  })
 
-  update();
+  update()
 
   // Clicking on map changes the coordinates on form:
-  map.addListener('click', function(e) {
-    if (document.querySelector('#formContainer').innerHTML.length>0) {
-      let lat = document.querySelector('#latitude');
-      lat.value=e.latLng.lat();
-      let lng = document.querySelector('#longitude');
-      lng.value=e.latLng.lng();
+  map.addListener('click', function (e) {
+    if (document.querySelector('#formContainer').innerHTML.length > 0) {
+      let lat = document.querySelector('#latitude')
+      lat.value = e.latLng.lat()
+      let lng = document.querySelector('#longitude')
+      lng.value = e.latLng.lng()
     }
-  });
+  })
 }
 
 // Create markers for every place:
@@ -45,7 +45,7 @@ function createMarkers (places) {
 }
 
 // Remove all markers from map
-function removeMarkers() {
+function removeMarkers () {
   if (markers && markers.length > 0) {
     markers.map(m => m.setMap(null))
   }
