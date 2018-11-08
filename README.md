@@ -44,4 +44,4 @@ Go to the `/client/` folder. Run
     npm start
 ```
 Which starts the live server. 
-The site can be found at: http://127.0.0.1:8080/
+The website can be found at: http://127.0.0.1:8080/
