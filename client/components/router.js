@@ -22,7 +22,6 @@ function getKeywordData () {
 }
 
 // Functions for place:
-
 function addPlace() {
   event.preventDefault();
   //Send a fetch request with the parameters from the form
@@ -136,4 +135,3 @@ function deleteKeyword(id) {
     console.log("Keyword deleted")
   );
 }
-

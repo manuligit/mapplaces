@@ -72,6 +72,7 @@ function filterWithKeywords () {
 
 // Toggle between big and small block
 function toggleBlock () {
+  console.log(search)
   event.preventDefault()
   if (event.target.value === 'small') {
     event.target.value = 'big'
@@ -87,8 +88,6 @@ function toggleBlock () {
 // Update the filter and search keyword from the search bar:
 function searchPlaces () {
   event.preventDefault()
-
-  //console.log(event.target.value)
   filter = event.target.value
   search = event.target.value
   update()

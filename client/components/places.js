@@ -10,10 +10,10 @@ function placeList() {
 function placeData(place) {
   let keywords = getKeywords(place);
   //getKeywords(place);
-  return `<div id="content">
+  return `<div class="place-content">
             <div class="firstRow">
               <h2>${place.title}</h2>
-              <div id="buttonsRow">
+              <div id="buttonsRow" class="buttonsRow">
                 <button type="button" value=${place.id} onclick="addEditPlaceForm();">Edit</button>
                 <button type="button" value=${place.id} onclick="removePlace();">Remove</button>
               </div>
@@ -35,7 +35,12 @@ function placeDataShort(place) {
           </div>`
 }
 
+// Create the form to add new keyword and ability to close the form:
 function keywordForm(id) {
+  let button = document.querySelector(`#addKeyword${id}`);
+  button.innerText="-";
+  button.onclick = resetForm;
+
   return `<form id="keywordForm" onsubmit="addKeywordToServer();">
             <input id="label" type="text" name="label" required />
             <input id="places" type="hidden" value=${[id]} name="places" required />
@@ -43,6 +48,7 @@ function keywordForm(id) {
           </form>`
 }
 
+// Create elements of all the keywords for one place and display add-button
 function getKeywords(place) {
   let labels = `<div class="labels">`;
   let keywords = ``;
@@ -53,7 +59,7 @@ function getKeywords(place) {
     place.keywords.map(e => keywords = keywords.concat(`\n  <div class="keyword">${e.label}</div>`));
   }
   // Display the "add keywords button:"
-  let button = `<button type="button" class="addKeyword" value=${place.id} onclick="addKeyword();">+</button><div class="keywordSearch"></div>`;
+  let button = `<button type="button" id="addKeyword${place.id}" class="addKeyword" value=${place.id} onclick="addKeyword();">+</button><div class="keywordSearch"></div>`;
 
   keywords = keywords.concat(`\n ${button}`);
   keywords = keywords.concat(`\n<div class="keywordsearch${place.id}"></div>`)
@@ -69,10 +75,20 @@ function addKeyword() {
   document.querySelector(`.keywordsearch${id}`).innerHTML = keywordForm(id);
 }
 
+// Delete the keyword adding form from view:
+function resetForm() {
+  event.preventDefault();
+  let button = event.target;
+  let id = event.target.value;
+  //console.log(id)
+  document.querySelector(`.keywordsearch${id}`).innerHTML = '';
+  button.innerText="+";
+  button.onclick = addKeyword;
+}
 
 // Remove a place from map:
 function removePlace() {
-  // Find item by id/coords/some kind of identifying attribute:
+  // Find item by id:
   let removeId = parseInt(event.target.value, 10);
   deletePlaceFromServer(removeId).then(() => {
     update();

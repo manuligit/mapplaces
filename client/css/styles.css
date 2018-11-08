@@ -29,10 +29,11 @@ html, body {
   color: #1D3557;
   width: 30%;
   float: right;
-  margin: 20px;
-  padding: 20px;
+  margin: 10px;
+  padding: 10px;
   height: 90vh;
   overflow: scroll;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
 
 .block {
@@ -59,7 +60,7 @@ button.menu {
 }
 #filter .searchbar {
   border-style: solid 3px;
-  padding: 0.5rem;
+  padding: 0.5em;
   width: calc(12*--column-width);
   position: relative;
   margin-bottom: 1em;
@@ -69,7 +70,7 @@ button.menu {
   padding: 1em;
 }
 #filter .checkbox:checked {
-  background-color: #E63946;
+  background-color: #1D3557;
 }
 
 #form {
@@ -94,26 +95,29 @@ button.menu {
   background-color: #457B9D;
 }
 
-#content {
+#menu {
+  overflow-x: hidden;
+}
+#menu .place-content {
   padding: 1em 0em;
 }
-#content .firstRow {
+#menu .place-content .firstRow {
   position: relative;
 }
-#content .firstRow .buttonRow {
+#menu .place-content .firstRow .buttonsRow {
   position: absolute;
   right: 0;
   top: 50%;
   transform: translateY(-50%);
 }
-#content h2 {
-  border-bottom: 1px solid rgba(128, 128, 128, 0.637);
+#menu .place-content h2 {
+  border-bottom: 1px solid #1D3557;
   margin-bottom: 1em;
 }
-#content .keyword {
+#menu .place-content .keyword {
   border-radius: 13px;
   padding: 0.1em 0.5em;
-  background-color: #E63946;
+  background-color: #1D3557;
   color: #F1FAEE;
   font-family: "Lato", sans-serif;
   font-size: 13px;
@@ -122,21 +126,25 @@ button.menu {
   display: inline-block;
   margin-top: 1em;
 }
-#content .addKeyword {
+#menu .place-content .addKeyword {
   border-radius: 13px;
   padding: 0.1em 0.5em;
-  background-color: #E63946;
+  background-color: #1D3557;
   display: inline;
   color: white;
 }
-#content #keywordForm {
-  margin: 1em;
+#menu .place-content #keywordForm {
+  margin: 1.5em 0em;
 }
-#content #keywordForm input {
-  color: #E63946;
+#menu .place-content #keywordForm input {
+  color: #1D3557;
 }
-#content #keywordForm input[type=submit] {
-  background-color: #E63946;
+#menu .place-content #keywordForm input#label {
+  padding: 1em 0.5em;
+  width: 80%;
+}
+#menu .place-content #keywordForm input[type=submit] {
+  background-color: #1D3557;
   color: #F1FAEE;
 }
 

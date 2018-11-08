@@ -43,6 +43,7 @@ function update() {
 };
 
 // Get form data as URLSearchParams to send with fetch request by searching an element from the DOM
+// TODO: Find a better place for this function
 function getFormData(tag) {
   var formElement = document.querySelector(tag);
   const data = new URLSearchParams();

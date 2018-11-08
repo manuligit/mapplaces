@@ -110,7 +110,7 @@ function toggleBlock2() {
 function addEditPlaceForm() {
   event.preventDefault();
   let place = places.find(e => e.id === parseInt(event.target.value, 10));
-  let button = querySelector('#formBlock');
+  let button = document.querySelector('#formBlock');
   button.value = "big";
   button.innerText = "-";
   document.querySelector('#formContainer').innerHTML = editForm(place);

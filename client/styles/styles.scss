@@ -3,7 +3,8 @@ $background_color: #F1FAEE;
 $primary_color:#1D3557;
 $secondary_color: #457B9D;
 $tertiary_color: #A8DADC;
-$accent_color: #E63946;
+$accent_color: #1D3557;
+$extra_color: #E63946;
 $main_font: 'Work Sans', sans-serif;
 $snd_font: 'Lato', sans-serif;
 
@@ -38,11 +39,11 @@ html, body {
     color: $primary_color;
     width: 30%;
     float: right;
-    margin: 20px;
-    padding: 20px;
+    margin: 10px;
+    padding: 10px;
     height: 90vh;
     overflow: scroll;
-    //border: solid 1px grey;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
 }
 
 .block {
@@ -71,7 +72,7 @@ button.menu {
 
     .searchbar {
         border-style: solid 3px;
-        padding: 0.5rem;
+        padding: 0.5em;
         width: calc(12*--column-width);
         position: relative;
         margin-bottom: 1em;
@@ -112,60 +113,70 @@ button.menu {
     }
 }
 
-#content {
-    padding: 1em 0em;
-    //border-bottom: 1px solid rgba(128, 128, 128, 0.637);
+#menu {
+    overflow-x: hidden;
 
-    .firstRow {
-        position: relative;
-        .buttonRow {
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-    }
+    .place-content {
+        padding: 1em 0em;
+        //border-bottom: 1px solid rgba(128, 128, 128, 0.637);
 
-    h2 {
-        border-bottom: 1px solid rgba(128, 128, 128, 0.637);
-        margin-bottom: 1em;
-    }
+        .firstRow {
+            position: relative;
 
-    .keyword {
-        border-radius: 13px;
-        padding: 0.1em 0.5em;
-        background-color: $accent_color;
-        color: $background_color;
-        font-family: 'Lato', sans-serif;
-        font-size: 13px;
-        font-weight: lighter;
-        width: auto;
-        display: inline-block;
-        margin-top: 1em;
-    }
-
-    .addKeyword {
-        border-radius: 13px;
-        padding: 0.1em 0.5em;
-        background-color: $accent_color;
-        display: inline;
-        color: white;
-    }
-
-    #keywordForm {
-        margin: 1em;
-
-        input {
-            color: $accent_color;
+            .buttonsRow {
+                position: absolute;
+                right: 0;
+                top: 50%;
+                transform: translateY(-50%);
+            }
         }
 
-        input[type="submit"] {
+        h2 {
+            border-bottom: 1px solid $primary_color;
+            margin-bottom: 1em;
+        }
+
+        .keyword {
+            border-radius: 13px;
+            padding: 0.1em 0.5em;
             background-color: $accent_color;
             color: $background_color;
+            font-family: 'Lato', sans-serif;
+            font-size: 13px;
+            font-weight: lighter;
+            width: auto;
+            display: inline-block;
+            margin-top: 1em;
+        }
+
+        .addKeyword {
+            border-radius: 13px;
+            padding: 0.1em 0.5em;
+            background-color: $accent_color;
+            display: inline;
+            color: white;
+        }
+
+        #keywordForm {
+            margin: 1.5em 0em;
+
+            input {
+                color: $accent_color;
+
+                &#label {
+                    padding: 1em 0.5em;
+                    width: 80%;
+                }
+            }
+            
+            input[type="submit"] {
+                background-color: $accent_color;
+                color: $background_color;
+            }
         }
     }
-}
 
+}
 h3 {
     font: $snd_font;
     margin-left: 0.5em;
