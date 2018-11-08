@@ -15,7 +15,7 @@ function placeData (place) {
               <h2>${place.title}</h2>
               <div id="buttonsRow" class="buttonsRow">
                 <button type="button" value=${place.id} onclick="addEditPlaceForm();">Edit</button>
-                <button type="button" value=${place.id} onclick="removePlace();">Remove</button>
+                <button type="button" class="removeButton" value=${place.id} onclick="removePlace();">Remove</button>
               </div>
             </div>
             <p>${place.description}</p>
@@ -56,7 +56,7 @@ function getKeywords (place) {
 
   // Create html structure for keywords:
   if (place.keywords && place.keywords.length > 0) {
-    place.keywords.map(e => { keywords = keywords.concat(`\n  <div class="keyword">${e.label}</div>`) })
+    place.keywords.map(e => { keywords = keywords.concat(`\n  <div class="keyword">${e.label}${removeButton(e,place)}</div>`) })
   }
   // Display the "add keywords button:"
   let button = `<button type="button" id="addKeyword${place.id}" class="addKeyword" value=${place.id} onclick="addKeyword();">+</button><div class="keywordSearch"></div>`
@@ -65,6 +65,17 @@ function getKeywords (place) {
   keywords = keywords.concat(`\n<div class="keywordsearch${place.id}"></div>`)
   labels = labels.concat(`${keywords} \n </div>`)
   return labels
+}
+
+// Quick remove button for keywords:
+function removeButton(e, place) {
+  return `<button class="removeKeyword" value=${e.id} onclick="removeKeywordButton(${place.id});">-</button>`
+}
+
+function removeKeywordButton (p_id) {
+  event.preventDefault()
+  kw_id = parseInt(event.target.value)
+  addPlaceToKeyword(kw_id, p_id)
 }
 
 // Add a form for adding/editing keywords

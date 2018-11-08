@@ -12,8 +12,6 @@ $snd_font: 'Lato', sans-serif;
     box-sizing: border-box;
 }
 
-/* Always set the map height explicitly to define the size of the div
-* element that contains the map. */
 html, body {
     height: 100%;
     width: 100%;
@@ -47,7 +45,7 @@ html, body {
 }
 
 .block {
-    padding: 1em 1em;
+    padding: 0.5em 0.5em;
 
     .header {
         position: relative;
@@ -117,8 +115,7 @@ button.menu {
     overflow-x: hidden;
 
     .place-content {
-        padding: 1em 0em;
-        //border-bottom: 1px solid rgba(128, 128, 128, 0.637);
+        padding-bottom: 1.5em;
 
         .firstRow {
             position: relative;
@@ -129,6 +126,10 @@ button.menu {
                 top: 50%;
                 transform: translateY(-50%);
             }
+        }
+
+        .removeButton:hover{
+            background-color: $extra_color;
         }
 
         h2 {
@@ -155,6 +156,19 @@ button.menu {
             background-color: $accent_color;
             display: inline;
             color: white;
+        }
+
+        .removeKeyword {
+            margin-left: 0.3em;
+            border-radius: 13px;
+            padding: 0em 0.3em;
+            background-color: $accent_color;
+            display: inline;
+            color: white;
+        }
+
+        .removeKeyword:hover {
+            background-color: $extra_color;
         }
 
         #keywordForm {

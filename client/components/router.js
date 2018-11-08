@@ -84,23 +84,23 @@ function addKeywordToServer () {
 }
 
 // Toggle place on an already existing keyword:
-function addPlaceToKeyword (keyword_id, place_id) {
-  let keyword = keywords.find(e => e.id === keyword_id)
+function addPlaceToKeyword (keywordId, placeId) {
+  let keyword = keywords.find(e => e.id === keywordId)
   // Check that label exists just in case
   if (keyword) {
     let places = keyword.places.map(e => e.id)
 
     // If place is already included, remove it:
-    if (places.includes(place_id)) {
-      places = places.filter(e => e !== place_id)
+    if (places.includes(placeId)) {
+      places = places.filter(e => e !== placeId)
     } else {
-      places = places.concat(place_id)
+      places = places.concat(placeId)
     }
 
     // Create the data for request:
     let data = JSON.stringify({ 'label': keyword.label, 'places': places })
 
-    editKeyword(keyword_id, data)
+    editKeyword(keywordId, data)
   }
 }
 

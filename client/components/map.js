@@ -3,7 +3,8 @@ function initMap () {
   // TODO: Check if the map initialization can be done according to the places/markers
   map = new google.maps.Map(document.getElementById('map'), {
     center: { lat: 60.147497, lng: 24.988798 },
-    zoom: 16
+    zoom: 16,
+    disableDefaultUI: true
   })
 
   update()
