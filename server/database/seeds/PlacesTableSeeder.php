@@ -11,6 +11,9 @@ class PlacesTableSeeder extends Seeder
      */
     public function run()
     {
+        factory(App\Keyword::class, 10)->create();
+        $kw_ids = App\Keyword::all('id')->pluck('id')->toArray();
+
         $faker = Faker\Factory::create();
         \App\Place::insert([
             'title' => 'Kirjasto',
@@ -55,5 +58,14 @@ class PlacesTableSeeder extends Seeder
             'created_at' => $faker->dateTime($max = 'now'),
             'updated_at' => $faker->dateTime($max = 'now')
         ]);
+
+        // Attach keywords to places:
+        \App\Place::find(1)->keywords()->attach(array_rand($kw_ids));
+        \App\Place::find(1)->keywords()->attach(array_rand($kw_ids));
+        \App\Place::find(1)->keywords()->attach(array_rand($kw_ids));
+        \App\Place::find(2)->keywords()->attach(array_rand($kw_ids));
+        \App\Place::find(2)->keywords()->attach(array_rand($kw_ids));
+        \App\Place::find(3)->keywords()->attach(array_rand($kw_ids));
+        \App\Place::find(4)->keywords()->attach(array_rand($kw_ids));
     }
 }

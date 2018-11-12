@@ -11,6 +11,8 @@ class KeywordsTableSeeder extends Seeder
      */
     public function run()
     {
+
+        $keyword = factory(App\Keyword::class, 10)->create();
         // $faker = Faker\Factory::create();
         // $keyword = \App\Keyword::insert([
         //     'label'=> 'Nähtävyys',
