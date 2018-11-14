@@ -57,7 +57,7 @@ function searchbar () {
 //  * * * * * * * * * * * * * * * * * * * * * * *
 
 // Add keywords to filter with keyword id
-function filterWithKeywords () {
+function filterWithKeywords (event) {
   let id = parseInt(event.target.value, 10)
   // If keyword is already on list, remove
   if (keywordfilter.includes(id)) {
@@ -136,7 +136,6 @@ function filterOpen (places) {
   let closes = new Date()
   opens.setSeconds(0)
   closes.setSeconds(0)
-
   let openPlaces = []
   places.forEach(e => {
     const opentime = e.opens_at.split(':')
