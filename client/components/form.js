@@ -37,7 +37,7 @@ function createForm () {
               </div>
               <input type="submit" value="Add Place"/>
             </form>
-          </div>`
+          </div>`;
 }
 
 // Form for editing an existing place
@@ -74,11 +74,11 @@ function editForm (place) {
               </div>
               <input type="submit" value="Edit Place"/>
             </form>
-          </div>`
+          </div>`;
 }
 
 function largeFormBlock () {
-  return createForm()
+  return createForm();
 }
 
 function formBlock () {
@@ -88,7 +88,7 @@ function formBlock () {
               <h3>Add or edit a place</h3>
             </div>
             <div id="formContainer"></div>
-          </div>`
+          </div>`;
 }
 
 //  * * * * * * * * * * * * * * * * * * * * * * *
@@ -97,24 +97,24 @@ function formBlock () {
 
 // Toggle between the small and large form block:
 function toggleBlock2 () {
-  event.preventDefault()
+  event.preventDefault();
   if (event.target.value === 'small') {
-    event.target.value = 'big'
-    event.target.innerText = '-'
-    document.querySelector('#formContainer').innerHTML = largeFormBlock()
+    event.target.value = 'big';
+    event.target.innerText = '-';
+    document.querySelector('#formContainer').innerHTML = largeFormBlock();
   } else {
-    event.target.value = 'small'
-    event.target.innerText = '+'
-    document.querySelector('#formContainer').innerHTML = ''
+    event.target.value = 'small';
+    event.target.innerText = '+';
+    document.querySelector('#formContainer').innerHTML = '';
   }
 }
 
 // Change the add place-form to edit place-form when editing a place:
 function addEditPlaceForm () {
-  event.preventDefault()
-  let place = places.find(e => e.id === parseInt(event.target.value, 10))
-  let button = document.querySelector('#formBlock')
-  button.value = 'big'
-  button.innerText = '-'
-  document.querySelector('#formContainer').innerHTML = editForm(place)
+  event.preventDefault();
+  let place = places.find(e => e.id === parseInt(event.target.value, 10));
+  let button = document.querySelector('#formBlock');
+  button.value = 'big';
+  button.innerText = '-';
+  document.querySelector('#formContainer').innerHTML = editForm(place);
 }
