@@ -57,7 +57,7 @@ function searchbar () {
 //  * * * * * * * * * * * * * * * * * * * * * * *
 
 // Add keywords to filter with keyword id
-function filterWithKeywords (event) {
+function filterWithKeywords () {
   let id = parseInt(event.target.value, 10)
   // If keyword is already on list, remove
   if (keywordfilter.includes(id)) {
