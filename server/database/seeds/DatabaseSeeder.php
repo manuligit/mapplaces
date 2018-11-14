@@ -11,7 +11,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call('PlacesTableSeeder');
         $this->call('KeywordsTableSeeder');
+        $this->call('PlacesTableSeeder');
     }
 }

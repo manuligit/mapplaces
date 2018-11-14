@@ -59,7 +59,9 @@ class PlacesTableSeeder extends Seeder
             'updated_at' => $faker->dateTime($max = 'now')
         ]);
 
-        // Attach keywords to places:
+        // Attach keywords to places by hand:
+        // TODO: Add checking if keyword already is attached before attaching
+        // And create a function instead of calling this x times:
         \App\Place::find(1)->keywords()->attach(array_rand($kw_ids));
         \App\Place::find(1)->keywords()->attach(array_rand($kw_ids));
         \App\Place::find(1)->keywords()->attach(array_rand($kw_ids));
